@@ -1,2 +1,2 @@
-# tisan-demo-led
-a led demo on tisan board
+# tisan-demo-rgb-led
+a rgb led demo on tisan board
