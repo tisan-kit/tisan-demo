@@ -1,32 +1,13 @@
-# Object files
+.cproject
+*.S
+
+*.dump
 *.o
-*.ko
-*.obj
-*.elf
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
 *.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
+*.a
+!/lib/*.a
+*.d
+*.d.*
+*.bin_rep
+*.project
+.settings/org.eclipse.core.resources.prefs
