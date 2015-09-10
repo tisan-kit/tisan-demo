@@ -1,3 +1,4 @@
+
 #############################################################
 # Required variables for each makefile
 # Discard this section from all parent makefiles
@@ -5,12 +6,17 @@
 #   CSRCS (all "C" files in the dir)
 #   SUBDIRS (all subdirs with a Makefile)
 #   GEN_LIBS - list of libs to be generated ()
-#   GEN_IMAGES - list of object file images to be generated ()
-#   GEN_BINS - list of binaries to be generated ()
+#   GEN_IMAGES - list of images to be generated ()
 #   COMPONENTS_xxx - a list of libs/objs in the form
 #     subdir/lib to be extracted and rolled up into
 #     a generated lib/image xxx.a ()
 #
+ifndef PDIR
+
+GEN_LIBS = libupgrade.a
+
+endif
+
 
 #############################################################
 # Configuration i.e. compile options etc.
@@ -19,34 +25,7 @@
 #   makefile at its root level - these are then overridden
 #   for a subtree within the makefile rooted therein
 #
-
-#UNIVERSAL_TARGET_DEFINES =		\
-
-# Other potential configuration flags include:
-#	-DTXRX_TXBUF_DEBUG
-#	-DTXRX_RXBUF_DEBUG
-#	-DWLAN_CONFIG_CCX
-ifeq ($(FLAVOR),debug)
-CONFIGURATION_DEFINES =	-DICACHE_FLASH -DTEST_ENVEROMENT -DDEBUG_MSG -DESP8266_PLANTFORM
-endif
-
-ifeq ($(FLAVOR),release)
-CONFIGURATION_DEFINES =	-DICACHE_FLASH -DDEBUG_MSG -DESP8266_PLANTFORM
-endif
-
-
-ifeq ($(FLAVOR),production)
-CONFIGURATION_DEFINES =	-DICACHE_FLASH -DESP8266_PLANTFORM
-endif
-
-DEFINES +=				\
-	$(UNIVERSAL_TARGET_DEFINES)	\
-	$(CONFIGURATION_DEFINES)
-
-DDEFINES +=				\
-	$(UNIVERSAL_TARGET_DEFINES)	\
-	$(CONFIGURATION_DEFINES)
-
+#DEFINES += 
 
 #############################################################
 # Recursion Magic - Don't touch this!!
@@ -61,9 +40,8 @@ DDEFINES +=				\
 #
 
 INCLUDES := $(INCLUDES) -I $(PDIR)include
+INCLUDES += -I ./
+INCLUDES += -I ../../include/ets
 PDIR := ../$(PDIR)
 sinclude $(PDIR)Makefile
-
-.PHONY: FORCE
-FORCE:
 
