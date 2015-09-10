@@ -12,8 +12,7 @@
 #     a generated lib/image xxx.a ()
 #
 TARGET = eagle
-#FLAVOR = release
-FLAVOR = FLAVOR
+FLAVOR = release
 
 #EXTRA_CCFLAGS += -u
 
@@ -22,14 +21,10 @@ GEN_IMAGES= eagle.app.v6.out
 GEN_BINS= eagle.app.v6.bin
 SPECIAL_MKTARGETS=$(APP_MKTARGETS)
 SUBDIRS=    \
-	user    \
-	driver	\
+	pando    \
+	peripheral	\
 	user	\
-	driver \
-	pando \
-	upgrade \
-	pando_subdevice	\
-	binary-protocol-tool
+	util 
 endif # } PDIR
 
 APPDIR = .
@@ -52,14 +47,9 @@ ifeq ($(FLAVOR),release)
 endif
 
 COMPONENTS_eagle.app.v6 = \
-	user/libuser.a	\
-	driver/libdriver.a \
-	driver/user_driver/libuserdriver.a	\
-	pando/libpando.a \
-	binary-protocol-tool/libpandoprotocol.a \
-    pando_subdevice/libpandosubdevice.a \
-    pando_subdevice/pando_sub_device/libsubdevice.a \
-    upgrade/libupgrade.a
+	pando/libpando.a	\
+	peripheral/libperipheral.a \
+	util/libutil.a
 
 LINKFLAGS_eagle.app.v6 = \
 	-L../lib        \
