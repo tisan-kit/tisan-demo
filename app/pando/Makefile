@@ -22,31 +22,14 @@
 
 #UNIVERSAL_TARGET_DEFINES =		\
 
+#ifndef PDIR
+GEN_LIBS = libpando.a
+#endif
+
 # Other potential configuration flags include:
 #	-DTXRX_TXBUF_DEBUG
 #	-DTXRX_RXBUF_DEBUG
 #	-DWLAN_CONFIG_CCX
-ifeq ($(FLAVOR),debug)
-CONFIGURATION_DEFINES =	-DICACHE_FLASH -DTEST_ENVEROMENT -DDEBUG_MSG -DESP8266_PLANTFORM
-endif
-
-ifeq ($(FLAVOR),release)
-CONFIGURATION_DEFINES =	-DICACHE_FLASH -DDEBUG_MSG -DESP8266_PLANTFORM
-endif
-
-
-ifeq ($(FLAVOR),production)
-CONFIGURATION_DEFINES =	-DICACHE_FLASH -DESP8266_PLANTFORM
-endif
-
-DEFINES +=				\
-	$(UNIVERSAL_TARGET_DEFINES)	\
-	$(CONFIGURATION_DEFINES)
-
-DDEFINES +=				\
-	$(UNIVERSAL_TARGET_DEFINES)	\
-	$(CONFIGURATION_DEFINES)
-
 
 #############################################################
 # Recursion Magic - Don't touch this!!

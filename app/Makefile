@@ -12,7 +12,7 @@
 #     a generated lib/image xxx.a ()
 #
 TARGET = eagle
-FLAVOR = release
+FLAVOR = debug
 
 #EXTRA_CCFLAGS += -u
 
@@ -22,7 +22,9 @@ GEN_BINS= eagle.app.v6.bin
 SPECIAL_MKTARGETS=$(APP_MKTARGETS)
 SUBDIRS=    \
 	user	\
-	util 
+	util \
+	pando \
+	peripheral
 endif # } PDIR
 
 APPDIR = .
@@ -45,7 +47,10 @@ ifeq ($(FLAVOR),release)
 endif
 
 COMPONENTS_eagle.app.v6 = \
-	util/libutil.a
+	util/libutil.a  \
+	user/libuser.a \
+	pando/libpando.a \
+	peripheral/libperipheral.a
 
 LINKFLAGS_eagle.app.v6 = \
 	-L../lib        \
