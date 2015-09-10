@@ -21,8 +21,6 @@ GEN_IMAGES= eagle.app.v6.out
 GEN_BINS= eagle.app.v6.bin
 SPECIAL_MKTARGETS=$(APP_MKTARGETS)
 SUBDIRS=    \
-	pando    \
-	peripheral	\
 	user	\
 	util 
 endif # } PDIR
@@ -47,8 +45,6 @@ ifeq ($(FLAVOR),release)
 endif
 
 COMPONENTS_eagle.app.v6 = \
-	pando/libpando.a	\
-	peripheral/libperipheral.a \
 	util/libutil.a
 
 LINKFLAGS_eagle.app.v6 = \
