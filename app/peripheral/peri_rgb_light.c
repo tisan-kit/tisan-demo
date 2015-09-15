@@ -12,7 +12,7 @@
 #include "peri_rgb_light.h"
 
 #include "user_interface.h"
-#include "pwm.h"
+#include "driver/pwm.h"
 #include "c_types.h"
 #include "spi_flash.h"
 

@@ -24,6 +24,8 @@
 
 ifndef PDIR
 GEN_LIBS = libuser.a
+SUBDIRS=    \
+	objects
 endif
 
 
@@ -50,4 +52,3 @@ sinclude $(PDIR)Makefile
 
 .PHONY: FORCE
 FORCE:
-

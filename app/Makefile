@@ -49,11 +49,14 @@ endif
 COMPONENTS_eagle.app.v6 = \
 	util/libutil.a  \
 	user/libuser.a \
+	user/objects/libobjects.a \
 	pando/libpando.a \
 	peripheral/libperipheral.a	\
+	peripheral/driver/libdriver.a \
 	pando/gateway/libgateway.a	\
 	pando/gateway/mqtt/libmqtt.a	\
-	pando//protocol/libprotocol.a
+	pando/protocol/libprotocol.a \
+	
 LINKFLAGS_eagle.app.v6 = \
 	-L../lib        \
 	-nostdlib	\

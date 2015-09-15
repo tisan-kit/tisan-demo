@@ -22,6 +22,10 @@
 
 #UNIVERSAL_TARGET_DEFINES =		\
 
+ifndef PDIR
+GEN_LIBS = libobjects.a
+endif
+
 # Other potential configuration flags include:
 #	-DTXRX_TXBUF_DEBUG
 #	-DTXRX_RXBUF_DEBUG

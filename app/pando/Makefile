@@ -31,9 +31,12 @@ endif
 
 #UNIVERSAL_TARGET_DEFINES =		\
 
-#ifndef PDIR
+ifndef PDIR
 GEN_LIBS = libpando.a
-#endif
+SUBDIRS=    \
+	gateway   \
+	protocol
+endif
 
 # Other potential configuration flags include:
 #	-DTXRX_TXBUF_DEBUG

@@ -22,9 +22,9 @@
 
 #UNIVERSAL_TARGET_DEFINES =		\
 
-#ifndef PDIR
+ifndef PDIR
 GEN_LIBS = libutil.a
-#endif
+endif
 
 # Other potential configuration flags include:
 #	-DTXRX_TXBUF_DEBUG
