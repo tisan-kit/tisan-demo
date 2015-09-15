@@ -28,32 +28,6 @@ decode_data(struct sub_device_buffer *device_buffer)
 	}
 
 	obj->unpack(object_param,  data_body.params->count);
-	/*
-	int i = data_body.params->count;
-
-	for (; i > 0; i--)
-	{
-		get_tlv_param(object_param, &tlv_type, &tlv_length, value);
-		pd_printf("params: type: %02x, length: %02x, \n", tlv_type, tlv_length);
-		show_package(value, tlv_length);
-
-
-	}
-
-	while((uint8_t *)object_param <= buf_end)
-	{
-		object_param = get_next_property((struct pando_property *)property_param,&data_body);
-	    pd_printf("count: %d\n", data_body.params->count);
-	    i = data_body.params->count;
-
-	    for (; i > 0; i--)
-	    {
-	    	get_tlv_param(object_param, &tlv_type, &tlv_length, value);
-	    	pd_printf("params: type: %02x, length: %02x, \n", tlv_type, tlv_length);
-	    	show_package(value, tlv_length);
-	    }
-	}
-	*/
 
 
 }
@@ -62,6 +36,30 @@ static void ICACHE_FLASH_ATTR
 send_current_status()
 {
 	struct sub_device_buffer* data_buffer;
+
+	pando_object* obj = NULL;
+	pando_objects_iterator* it = create_pando_objects_iterator();
+	while(obj = pando_objects_iterator_next(it)){
+		struct TLVs* params =  obj->pack();
+		if(0 == it->cur)
+		{
+			data_buffer = create_data_package(obj->no, 0, params);
+			if( NULL == data_buffer)
+			{
+				PRINTF("Create data package failed.");
+			}
+
+		}
+		int ret = add_next_property(data_buffer, obj->no, params);
+
+		if (ret != 0)
+		{
+			PRINTF("add_next_property failed.");
+		}
+		delete_params_block(params);
+
+	}
+	delete_pando_objects_iterator(it);
 
 	channel_send_to_device(PANDO_CHANNEL_PORT_1, data_buffer->buffer, data_buffer->buffer_length);
 	show_package(data_buffer->buffer, data_buffer->buffer_length);

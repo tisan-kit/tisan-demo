@@ -25,6 +25,8 @@ unsigned int default_private_key_len = 0;
 #endif
 #endif
 
+extern
+
 /******************************************************************************
  * FunctionName : user_init
  * Description  : entry of user application, init user function here

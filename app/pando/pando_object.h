@@ -16,10 +16,14 @@
 #include "protocol/sub_device_protocol_tool.h"
 
 typedef struct {
-	sint8 no;
+	uint8 no;
 	struct TLVs* (*pack)();
 	void (*unpack)(struct TLV*, sint16);
 }pando_object;
+
+typedef struct {
+	uint8 cur;
+}pando_objects_iterator;
 
 /******************************************************************************
  * FunctionName : register_pando_object.
@@ -36,5 +40,15 @@ void register_pando_object(pando_object object);
  * Returns      : the pando object of specified no, NULL if not found.
 *******************************************************************************/
 pando_object* find_pando_object(int8 no);
+
+/******************************************************************************
+ * FunctionName : create_pando_objects_iterator, delete_pando_objects_iterator.
+ * Description  : iterator for pando object list.
+ * Parameters   : .
+ * Returns      : .
+*******************************************************************************/
+pando_objects_iterator* create_pando_objects_iterator();
+void delete_pando_objects_iterator(pando_objects_iterator*);
+pando_object* pando_objects_iterator_next(pando_objects_iterator*);
 
 #endif /* PANDO_OBJECTS_H_ */
