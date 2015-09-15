@@ -22,9 +22,11 @@
 
 #UNIVERSAL_TARGET_DEFINES =		\
 
-#ifndef PDIR
+ifndef PDIR
 GEN_LIBS = libperipheral.a
-#endif
+SUBDIRS=    \
+	driver
+endif
 
 # Other potential configuration flags include:
 #	-DTXRX_TXBUF_DEBUG
