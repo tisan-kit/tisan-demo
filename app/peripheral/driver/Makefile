@@ -11,7 +11,9 @@
 #     subdir/lib to be extracted and rolled up into
 #     a generated lib/image xxx.a ()
 #
-
+ifndef PDIR
+GEN_LIBS = libdriver.a
+endif
 #############################################################
 # Configuration i.e. compile options etc.
 # Target specific stuff (defines etc.) goes in here!
