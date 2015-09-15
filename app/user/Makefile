@@ -22,9 +22,11 @@
 
 #UNIVERSAL_TARGET_DEFINES =		\
 
-#ifndef PDIR
+ifndef PDIR
 GEN_LIBS = libuser.a
-#endif
+SUBDIRS=    \
+	objects
+endif
 
 
 # Other potential configuration flags include:
@@ -50,4 +52,3 @@ sinclude $(PDIR)Makefile
 
 .PHONY: FORCE
 FORCE:
-

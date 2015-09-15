@@ -1,3 +1,4 @@
+
 #############################################################
 # Required variables for each makefile
 # Discard this section from all parent makefiles
@@ -11,6 +12,14 @@
 #     subdir/lib to be extracted and rolled up into
 #     a generated lib/image xxx.a ()
 #
+ifndef PDIR
+GEN_LIBS = libpando.a
+SUBDIRS=    \
+	gateway	\
+	gateway/mqtt	\
+	protocol
+endif
+   
 
 #############################################################
 # Configuration i.e. compile options etc.
@@ -22,9 +31,12 @@
 
 #UNIVERSAL_TARGET_DEFINES =		\
 
-#ifndef PDIR
+ifndef PDIR
 GEN_LIBS = libpando.a
-#endif
+SUBDIRS=    \
+	gateway   \
+	protocol
+endif
 
 # Other potential configuration flags include:
 #	-DTXRX_TXBUF_DEBUG
