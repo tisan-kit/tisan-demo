@@ -22,9 +22,9 @@
 
 #UNIVERSAL_TARGET_DEFINES =		\
 
-#ifndef PDIR
+ifndef PDIR
 GEN_LIBS = libuser.a
-#endif
+endif
 
 
 # Other potential configuration flags include:

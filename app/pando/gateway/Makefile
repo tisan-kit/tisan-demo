@@ -1,3 +1,4 @@
+
 #############################################################
 # Required variables for each makefile
 # Discard this section from all parent makefiles
@@ -11,6 +12,11 @@
 #     subdir/lib to be extracted and rolled up into
 #     a generated lib/image xxx.a ()
 #
+ifndef PDIR
+GEN_LIBS = libgateway.a
+SUBDIRS=    \
+	mqtt
+endif
 
 #############################################################
 # Configuration i.e. compile options etc.
