@@ -50,8 +50,10 @@ COMPONENTS_eagle.app.v6 = \
 	util/libutil.a  \
 	user/libuser.a \
 	pando/libpando.a \
-	peripheral/libperipheral.a
-
+	peripheral/libperipheral.a	\
+	pando/gateway/libgateway.a	\
+	pando/gateway/mqtt/libmqtt.a	\
+	pando//protocol/libprotocol.a
 LINKFLAGS_eagle.app.v6 = \
 	-L../lib        \
 	-nostdlib	\
