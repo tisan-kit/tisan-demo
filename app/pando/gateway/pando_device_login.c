@@ -8,8 +8,8 @@
 #include "json/jsontree.h"
 #include "json/jsonparse.h"
 #include "../../util/converter.h"
-#include "gateway_config.h"
 #include "../../user/device_config.h"
+#include "gateway_defs.h"
 
 #define MAX_BUF_LEN 256
 #define KEY_BUF_LEN 64

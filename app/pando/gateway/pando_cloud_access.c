@@ -5,10 +5,10 @@
 #include "osapi.h"
 #include "mem.h"
 #include "espconn.h"
+#include "gateway_defs.h"
 #include "pando_channel.h"
 #include "pando_system_time.h"
 #include "mqtt/mqtt.h"
-#include "gateway_config.h"
 
 #define IP_STR_LEN 16
 #define PORT_STR_LEN 8

@@ -3,12 +3,12 @@
 #include "pando_storage_interface.h"
 #include "user_interface.h"
 #include "c_types.h"
-#include "gateway_config.h"
 #include "osapi.h"
 #include "mem.h"
 #include "json/jsontree.h"
 #include "json/jsonparse.h"
 #include "../../user/device_config.h"
+#include "gateway_defs.h"
 
 #define MAX_BUF_LEN 256
 #define DEVICE_SERIAL_BUF_LEN 16
