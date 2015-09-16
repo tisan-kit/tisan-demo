@@ -71,7 +71,7 @@ key_init(struct keys_param *keys)
                           | GPIO_PIN_PAD_DRIVER_SET(GPIO_PAD_DRIVER_DISABLE)
                           | GPIO_PIN_SOURCE_SET(GPIO_AS_PIN_SOURCE));
 
-        //clear gpio14 status
+        //clear interrupt status
         GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(keys->single_key[i]->gpio_id));
 
         //enable interrupt
@@ -92,7 +92,6 @@ key_5s_cb(struct single_key_param *single_key)
 {
     os_timer_disarm(&single_key->key_5s);
 
-    // low, then restart
     if (0 == GPIO_INPUT_GET(GPIO_ID_PIN(single_key->gpio_id))) {
         if (single_key->long_press) {
             single_key->long_press();
@@ -136,7 +135,7 @@ key_intr_handler(struct keys_param *keys)
 {
     uint8 i;
     uint32 gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
-
+   // PRINTF("key init occur,gpio_status:%s\n",gpio_status);
     for (i = 0; i < keys->key_num; i++) {
         if (gpio_status & BIT(keys->single_key[i]->gpio_id)) {
             //disable interrupt
