@@ -33,11 +33,7 @@ LOCAL struct single_key_param *single_key[CONFIG_KEY_NUM];
 LOCAL void ICACHE_FLASH_ATTR
 peri_key_short_press(void)
 {
-    /*struct PLUG_PARAM plug_param;
-    plug_param = user_plug_get_status();
-    plug_param.status = (~plug_param.status) & 0x01;
-    user_plug_set_status(plug_param);*/
-	PRINTF("PERI_KEY_SHORT_PRESS occur\n");
+	;
 }
 
 
@@ -51,7 +47,7 @@ peri_key_short_press(void)
 static void ICACHE_FLASH_ATTR
 peri_key_long_press(void)
 {
-	PRINTF("PERI_KEY_LONG_PRESS occur\n"); //pando_gateway_wifi_config();
+	wifi_config();
 }
 
 /******************************************************************************
