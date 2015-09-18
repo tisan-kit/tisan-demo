@@ -31,7 +31,7 @@ static DHT_Sensor dht_sensor;
 
 #define sleepms(x) os_delay_us(x*1000);
 /******************************************************************************
- * FunctionName : peri_key_short_press
+ * FunctionName : scale_humidity
  * Description  : key's short press function, needed to be installed
  * Parameters   : none
  * Returns      : none
@@ -200,11 +200,11 @@ dht_init(DHT_Sensor* sensor)
 	dht_sensor.pin = sensor->pin;
 	dht_sensor.type = DHT11;
 	//set gpio2 as gpio pin
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, FUNC_GPIO13);
+	PIN_FUNC_SELECT(DHT_DATA_IO_MUX, DHT_DATA_IO_FUNC);
 	    //disable pulldown
-	PIN_PULLDWN_DIS(PERIPHS_IO_MUX_MTCK_U);
+	PIN_PULLDWN_DIS(DHT_DATA_IO_MUX);
 	    //enable pull up R
-	PIN_PULLUP_EN(PERIPHS_IO_MUX_MTCK_U);
+	PIN_PULLUP_EN(DHT_DATA_IO_MUX);
 	    // Configure the GPIO with internal pull-up
 	    // PIN_PULLUP_EN( gpio );
 	GPIO_DIS_OUTPUT(dht_sensor.pin);

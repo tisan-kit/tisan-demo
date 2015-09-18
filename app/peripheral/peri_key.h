@@ -13,14 +13,32 @@
 #ifndef PERI_KEY_H_
 #define PERI_KEY_H_
 
-/******************************************************************************
- * FunctionName : user_key_init.
- * Description  : initialize the key.
- * Parameters   : none
- * Returns      : none
-*******************************************************************************/
 
-void peri_key_init(void);
+#include "gpio.h"
+#include "../../include/os_type.h"
+
+#define CONFIG_KEY_0_IO_MUX     PERIPHS_IO_MUX_GPIO4_U
+
+typedef void (* key_function)(void);
+
+struct key_param {
+    uint8 key_level;
+    uint32 gpio_name;
+    uint8  gpio_id;
+    os_timer_t key_5s;
+    os_timer_t key_50ms;
+    key_function short_press;
+    key_function long_press;
+};
+
+struct keys_param {
+    uint8 key_num;
+    struct key_param **single_key;
+};
+
+void peri_key_short_press(void);
+void peri_key_long_press(void);
+void peri_single_key_init(uint32 gpio_name,key_function long_press, key_function short_press);
 
 
 #endif /* APP_INCLUDE_USER_USER_KEY_H_ */

@@ -13,43 +13,38 @@
 #include "user_interface.h"
 #include "eagle_soc.h"
 #include "driver/key.h"
+#include "os_type.h"
+#include "mem.h"
 
  
-#define CONFIG_KEY_NUM            1
+LOCAL struct key_param key;
 
-LOCAL struct keys_param keys;
-LOCAL struct single_key_param *single_key[CONFIG_KEY_NUM];
-
-#define CONFIG_KEY_0_IO_MUX     PERIPHS_IO_MUX_GPIO4_U
-#define CONFIG_KEY_0_IO_NUM     4
-#define CONFIG_KEY_0_IO_FUNC    FUNC_GPIO4
-
+extern void key_intr_handler(struct key_param *key);
 /******************************************************************************
- * FunctionName : peri_key_short_press
+ * FunctionName : user_plug_short_press
  * Description  : key's short press function, needed to be installed
  * Parameters   : none
  * Returns      : none
 *******************************************************************************/
-LOCAL void ICACHE_FLASH_ATTR
+void ICACHE_FLASH_ATTR
 peri_key_short_press(void)
 {
-	;
+	  PRINTF("short\n");
 }
 
 
 /******************************************************************************
- * FunctionName : peri_key_long_press
+ * FunctionName : user_plug_long_press
  * Description  : key's long press function, needed to be installed, preserved function.
  * Parameters   : none
  * Returns      : none
 *******************************************************************************/
 
-static void ICACHE_FLASH_ATTR
+void ICACHE_FLASH_ATTR
 peri_key_long_press(void)
 {
-	wifi_config();
+	  PRINTF("long\n");
 }
-
 /******************************************************************************
  * FunctionName : peri_key_init.
  * Description  : initialize key device.
@@ -57,12 +52,22 @@ peri_key_long_press(void)
  * Returns      : none
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
-peri_key_init(void)
+peri_single_key_init(uint32 gpio_name,key_function long_press, key_function short_press)
 {
+    struct key_param *single_key = (struct key_param *)os_zalloc(sizeof(struct key_param));
+    uint8 gpio_id=get_gpio_id(gpio_name);
+    uint8 gpio_func=get_gpio_func(gpio_name);
+    single_key->gpio_name = gpio_name;
+    single_key->gpio_id = gpio_id;
+    single_key->key_level = 1;
+    single_key->long_press = long_press;
+    single_key->short_press = short_press;
 
-    single_key[0] = key_init_single(CONFIG_KEY_0_IO_NUM, CONFIG_KEY_0_IO_MUX, CONFIG_KEY_0_IO_FUNC,
-                                    peri_key_long_press, peri_key_short_press);
-    keys.key_num = CONFIG_KEY_NUM;
-    keys.single_key = single_key;
-    key_init(&keys);
+    ETS_GPIO_INTR_ATTACH(key_intr_handler,single_key);
+    ETS_GPIO_INTR_DISABLE();
+
+    key_init(gpio_name, gpio_id, gpio_func);
+
+    ETS_GPIO_INTR_ENABLE();
+
 }

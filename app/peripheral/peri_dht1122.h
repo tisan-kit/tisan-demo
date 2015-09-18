@@ -43,6 +43,11 @@ typedef struct {
 #define DHT_MAXTIMINGS	10000
 #define DHT_BREAKTIME	20
 #define DHT_MAXCOUNT	32000
+
+#define DHT_DATA_IO_MUX     PERIPHS_IO_MUX_MTCK_U
+#define DHT_DATA_IO_NUM		13
+#define DHT_DATA_IO_FUNC	FUNC_GPIO13
+
 //#define DHT_DEBUG		true
 
 void dht_init(DHT_Sensor* sensor);
