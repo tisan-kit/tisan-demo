@@ -3,12 +3,12 @@
 #include "pando_storage_interface.h"
 #include "user_interface.h"
 #include "c_types.h"
-#include "gateway_config.h"
 #include "osapi.h"
 #include "mem.h"
 #include "json/jsontree.h"
 #include "json/jsonparse.h"
 #include "../../user/device_config.h"
+#include "gateway_defs.h"
 
 #define MAX_BUF_LEN 256
 #define DEVICE_SERIAL_BUF_LEN 16
@@ -138,7 +138,7 @@ pando_device_register(register_callback callback)
 
     char str_device_serial[DEVICE_SERIAL_BUF_LEN];
     uint32 device_serial = system_get_chip_id();
-    os_sprintf(str_device_serial, "%06x", device_serial);
+    os_sprintf(str_device_serial, "%08x", device_serial);
 
     // try register device via HTTP
     struct jsontree_string json_product_key = JSONTREE_STRING(PANDO_PRODUCT_KEY);
