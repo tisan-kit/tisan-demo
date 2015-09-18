@@ -17,14 +17,9 @@
 #define ACCESS_TOKEN_LEN 16
 
 static login_callback device_login_callback = NULL;
-
 static char * request = NULL;
 
 extern uint8 pando_device_token[ACCESS_TOKEN_LEN];
-
-uint64_t g_event_sequence;
-uint64_t g_data_sequence;
-
 
 static void ICACHE_FLASH_ATTR
 http_callback_login(char * response, int http_status, char * full_response)
@@ -79,20 +74,6 @@ http_callback_login(char * response, int http_status, char * full_response)
                             jsonparse_next(&json_state);
                             jsonparse_next(&json_state);
                             jsonparse_copy_value(&json_state, access_token, ACCESS_TOKEN_LEN*2 + 16);
-                        }
-                        else if(jsonparse_strcmp_value(&json_state, "event_sequence") == 0)
-                        {
-                        	jsonparse_next(&json_state);
-                        	jsonparse_next(&json_state);
-                        	g_event_sequence = jsonparse_get_value_as_int(&json_state);
-                        	PRINTF("synchronization event_sequence: %llu\n",  g_event_sequence);
-                        }
-                        else if(jsonparse_strcmp_value(&json_state, "data_sequence") == 0)
-                        {
-                            jsonparse_next(&json_state);
-                            jsonparse_next(&json_state);
-                            g_data_sequence = jsonparse_get_value_as_int(&json_state);
-                            PRINTF("synchronization event_sequence: %llu\n",  g_data_sequence);
                         }
                         else if(jsonparse_strcmp_value(&json_state, "access_addr") == 0)
                         {

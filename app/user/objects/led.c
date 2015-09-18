@@ -10,6 +10,7 @@
  *********************************************************/
 #include "../../pando/pando_object.h"
 #include "c_types.h"
+#include "user_interface.h"
 
 #define LED_OBJECT_NO 1
 
@@ -18,6 +19,12 @@ struct led {
 	uint8 green;
 	uint8 blue;
 };
+
+void ICACHE_FLASH_ATTR
+led_init()
+{
+	// TODO. init led here.
+}
 
 void ICACHE_FLASH_ATTR
 led_set(struct led* self)
@@ -31,14 +38,17 @@ led_get(struct led* self)
 	// TODO. read pwm values
 }
 
+
 struct led* ICACHE_FLASH_ATTR
-create_led(){
+create_led()
+{
 	struct led* led = (struct led*)os_malloc(sizeof(led));
 	return led;
 }
 
 void ICACHE_FLASH_ATTR
-delete_led(struct led* led){
+delete_led(struct led* led)
+{
 	if(led)
 	{
 		os_free(led);
@@ -109,8 +119,8 @@ led_object_unpack(struct TLV* params, sint16 count)
 void ICACHE_FLASH_ATTR
 led_object_init()
 {
-	// TODO. init here...
-
+	// init here...
+	led_init();
 
 	// register the object
 	pando_object led_object = {
@@ -118,7 +128,7 @@ led_object_init()
 		led_object_pack,
 		led_object_unpack,
 	};
-	pando_object_register(led_object);
+	register_pando_object(led_object);
 }
 
 

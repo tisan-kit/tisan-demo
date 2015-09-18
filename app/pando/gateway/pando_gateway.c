@@ -53,7 +53,12 @@ login_cb(PANDO_LOGIN_RESULT result)
     {
     	if(gateway_err_cb != NULL)
     	{
-    		gateway_err_cb(ERR_LOGIN);
+    		// TODO: error process function.
+    		//if(gateway_err_cb != NULL)
+    		//{
+    		//	gateway_err_cb(ERR_ACCESS);
+    		//}
+    		  pando_device_login(login_cb);
     	}
     }
 }
@@ -75,10 +80,12 @@ register_cb(PANDO_REGISTER_RESULT result)
     }
     else
     {
-    	if(gateway_err_cb != NULL)
-    	{
-    		gateway_err_cb(ERR_REGISTER);
-    	}
+    	// TODO: error process function.
+        //if(gateway_err_cb != NULL)
+    	//{
+    	//	gateway_err_cb(ERR_ACCESS);
+    	//}
+    	  pando_device_login(login_cb);
     }
 }
 
@@ -96,10 +103,13 @@ access_error_cb(PANDO_ACCESS_ERROR err)
     static uint8 access_times = 0;
     if(access_times >= ACEESS_ERROR_MAX_TIMES)
     {
-        if(gateway_err_cb != NULL)
-        {
-        	gateway_err_cb(ERR_ACCESS);
-        }
+    	// TODO: error process function.
+        //if(gateway_err_cb != NULL)
+        //{
+        //	gateway_err_cb(ERR_ACCESS);
+        //}
+    	 pando_device_login(login_cb);
+
     }
     else
     {
