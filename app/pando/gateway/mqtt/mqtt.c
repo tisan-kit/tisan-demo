@@ -219,13 +219,12 @@ READPACKET:
 				  }
 				break;
 			  case MQTT_MSG_TYPE_PINGRESP:
-				// Ignore
+				// TODO : the heart beat ack, if not receive heart beat...
 				break;
 			}
 			// NOTE: this is done down here and not in the switch case above
 			// because the PSOCK_READBUF_LEN() won't work inside a switch
 			// statement due to the way protothreads resume.
-			INFO("uu1\n");
 			if(msg_type == MQTT_MSG_TYPE_PUBLISH)
 			{
 			  INFO("uu2\n,receive length:%d, actual length:%d\n",client->mqtt_state.message_length, client->mqtt_state.message_length_read);
@@ -536,30 +535,15 @@ MQTT_InitClient(MQTT_Client *mqttClient, uint8_t* client_id, uint8_t* client_use
 	os_strcpy(mqttClient->connect_info.client_id, client_id);
 	mqttClient->connect_info.client_id[temp] = 0;
 
-	if(client_user == NULL)
-	{
-		mqttClient->connect_info.username = NULL;
-	}
+	temp = os_strlen(client_user);
+	mqttClient->connect_info.username = (uint8_t*)os_zalloc(temp + 1);
+	os_strcpy(mqttClient->connect_info.username, client_user);
+	mqttClient->connect_info.username[temp] = 0;
 
-	else
-	{
-		temp = os_strlen(client_user);
-		mqttClient->connect_info.username = (uint8_t*)os_zalloc(temp + 1);
-		os_strcpy(mqttClient->connect_info.username, client_user);
-		mqttClient->connect_info.username[temp] = 0;
-	}
-	if(client_pass == NULL)
-	{
-		mqttClient->connect_info.password = NULL;
-	}
-
-	else
-	{
-		temp = os_strlen(client_pass);
-		mqttClient->connect_info.password = (uint8_t*)os_zalloc(temp + 1);
-		os_strcpy(mqttClient->connect_info.password, client_pass);
-		mqttClient->connect_info.password[temp] = 0;
-	}
+	temp = os_strlen(client_pass);
+	mqttClient->connect_info.password = (uint8_t*)os_zalloc(temp + 1);
+	os_strcpy(mqttClient->connect_info.password, client_pass);
+	mqttClient->connect_info.password[temp] = 0;
 
 	mqttClient->connect_info.keepalive = keepAliveTime;
 	mqttClient->connect_info.clean_session = cleanSession;

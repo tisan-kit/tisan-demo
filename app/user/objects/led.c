@@ -11,6 +11,7 @@
 #include "../../pando/pando_object.h"
 #include "c_types.h"
 #include "user_interface.h"
+#include "../../peripheral/peri_rgb_light.h"
 
 #define LED_OBJECT_NO 1
 
@@ -23,19 +24,27 @@ struct led {
 void ICACHE_FLASH_ATTR
 led_init()
 {
-	// TODO. init led here.
+	peri_rgb_light_init();
 }
 
 void ICACHE_FLASH_ATTR
-led_set(struct led* self)
+led_set(struct led* value)
 {
-	// TODO. set pwm values
+	struct LIGHT_PARAM light_value;
+	light_value.pwm_duty[0] = value->red;
+	light_value.pwm_duty[1] = value->green;
+	light_value.pwm_duty[2] = value->blue;
+	peri_rgb_light_param_set(light_value);
 }
 
 void ICACHE_FLASH_ATTR
-led_get(struct led* self)
+led_get(struct led* value)
 {
-	// TODO. read pwm values
+	struct LIGHT_PARAM light_value;
+	light_value = peri_rgb_light_param_get();
+	light_value.pwm_duty[0] = value->red;
+	light_value.pwm_duty[1] = value->green;
+	light_value.pwm_duty[2] = value->blue;
 }
 
 
@@ -96,7 +105,6 @@ led_object_unpack(struct TLV* params, sint16 count)
 	uint16_t tlv_type, tlv_length;
 	uint8_t value;
 
-
 	get_tlv_param(params, &tlv_type, &tlv_length, &value);
 	PRINTF("params: type: %02x, length: %02x, \n", tlv_type, tlv_length);
 	show_package(&value, tlv_length);
@@ -130,7 +138,3 @@ led_object_init()
 	};
 	register_pando_object(led_object);
 }
-
-
-
-

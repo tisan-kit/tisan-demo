@@ -22,6 +22,16 @@
 */
 typedef void (* wifi_config_callback)(CONFIG_RESULT result);
 
+
+/******************************************************************************
+ * FunctionName : get_wifi_conifg_state
+ * Description  : get the wifi config state.
+ * Parameters   : none.
+ * Returns      : 1: the device is in wifi cofig state.
+ * 				  0: the device is not in wifi config state.
+*******************************************************************************/
+bool get_wifi_conifg_state();
+
 /******************************************************************************
  * FunctionName : wifi_config
  * Description  : configure the gateway wifi SSID and password.

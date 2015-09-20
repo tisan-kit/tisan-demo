@@ -14,6 +14,21 @@
 #include "wifi_config.h"
 
 static wifi_config_callback wifi_config_cb = NULL;
+static bool s_config_start_flag = 0;
+
+
+/******************************************************************************
+ * FunctionName : get_wifi_conifg_state
+ * Description  : get the wifi config state.
+ * Parameters   : none.
+ * Returns      : 1: the device is in wifi cofig state.
+ * 				  0: the device is not in wifi config state.
+*******************************************************************************/
+bool ICACHE_FLASH_ATTR
+get_wifi_conifg_state()
+{
+	return s_config_start_flag;
+}
 
 static void ICACHE_FLASH_ATTR
 smartconfig_done(sc_status status, void *pdata)
@@ -58,7 +73,11 @@ smartconfig_done(sc_status status, void *pdata)
 	    	os_printf("Phone ip: %d.%d.%d.%d\n",phone_ip[0],phone_ip[1],phone_ip[2],phone_ip[3]);
 		}
 		smartconfig_stop();
-		wifi_config_cb(CONFIG_OK);
+		s_config_start_flag = 0;
+		if(wifi_config_cb != NULL)
+		{
+			wifi_config_cb(CONFIG_OK);
+		}
         break;
     }
 
@@ -76,15 +95,14 @@ void ICACHE_FLASH_ATTR
 wifi_config(wifi_config_callback config_cb)
 {
 	PRINTF("wifi config start...\n");
-	static s_config_start_flag = 0;
 	wifi_config_cb = config_cb;
     if(s_config_start_flag)
     {
     	smartconfig_stop();
     }
 
+    s_config_start_flag = 1;
     smartconfig_set_type(SC_TYPE_ESPTOUCH);
     wifi_set_opmode(STATION_MODE);
     smartconfig_start(smartconfig_done);
-    s_config_start_flag = 1;
 }

@@ -17,6 +17,7 @@
 #include "../protocol/pando_endian.h"
 #include "pando_storage_interface.h"
 #include "espconn.h"
+#include "user_interface.h"
 
 #define TCP_SERVER_PORT 8890
 #define JSON_HEAD_MAGIC 0x7064
@@ -63,7 +64,7 @@ send_device_key(void* arg)
      }
      else
      {
-    	PRINTF("no device_key, please check whether the device has registered!");
+    	PRINTF("no device_key, please check whether the device has registered!\n");
         json_pack_head.length = 0;
         package_length = 0;
      }

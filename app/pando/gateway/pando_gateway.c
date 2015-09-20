@@ -17,17 +17,70 @@
 #include "pando_system_time.h"
 #include "espconn.h"
 
+typedef enum {
+    ERR_LOGIN = 0,
+    ERR_REGISTER,
+    ERR_ACCESS
+}GATEWAY_ERROR;
+
 #define ACEESS_ERROR_MAX_TIMES 3
 
 extern load_data_from_flash();
 
-static gateway_err_callback gateway_err_cb;
+static os_timer_t wifi_check_timer;
 
 static void login_cb(PANDO_LOGIN_RESULT result); //login callback function.
 
 static void access_error_cb(PANDO_ACCESS_ERROR err); //access error callback function.
 
 static void register_cb(PANDO_REGISTER_RESULT result); // register callback function.
+
+
+/******************************************************************************
+ * FunctionName : wifi_connect_check
+ * Description  : check the wifi connect status. if device has connected the wifi,
+ * 				  start the gateway flow.
+ * Parameters   : none
+ * Returns      : none
+*******************************************************************************/
+static void ICACHE_FLASH_ATTR
+wifi_connect_check()
+{
+	struct ip_info device_ip;
+	uint8 connect_status = 0;
+	wifi_get_ip_info(STATION_IF, &device_ip);
+	connect_status = wifi_station_get_connect_status();
+	if (connect_status == STATION_GOT_IP && device_ip.ip.addr != 0)
+	{
+		// device has connected the wifi.
+
+		// the device is in wifi config mode, waiting for wifi config mode over.
+		if(get_wifi_conifg_state() == 1)
+		{
+			return;
+		}
+		os_timer_disarm(&wifi_check_timer);
+		pando_device_login(login_cb);
+	}
+	else
+	{
+		PRINTF("WIFI status: not connected\n");
+	}
+}
+
+/******************************************************************************
+ * FunctionName : gate_err_process
+ * Description  : process the error of gateway.
+ * Parameters   : the login result.
+ * Returns      : none
+*******************************************************************************/
+static void ICACHE_FLASH_ATTR
+gateway_err_process(GATEWAY_ERROR err)
+{
+	os_timer_disarm(&wifi_check_timer);
+	os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_connect_check, NULL);
+	os_timer_arm(&wifi_check_timer, 3000, 1);
+}
 
 /******************************************************************************
  * FunctionName : login_cb
@@ -51,15 +104,7 @@ login_cb(PANDO_LOGIN_RESULT result)
     }
     else
     {
-    	if(gateway_err_cb != NULL)
-    	{
-    		// TODO: error process function.
-    		//if(gateway_err_cb != NULL)
-    		//{
-    		//	gateway_err_cb(ERR_ACCESS);
-    		//}
-    		  pando_device_login(login_cb);
-    	}
+    	gateway_err_process(ERR_LOGIN);
     }
 }
 
@@ -80,12 +125,7 @@ register_cb(PANDO_REGISTER_RESULT result)
     }
     else
     {
-    	// TODO: error process function.
-        //if(gateway_err_cb != NULL)
-    	//{
-    	//	gateway_err_cb(ERR_ACCESS);
-    	//}
-    	  pando_device_login(login_cb);
+    	gateway_err_process(ERR_REGISTER);
     }
 }
 
@@ -103,12 +143,7 @@ access_error_cb(PANDO_ACCESS_ERROR err)
     static uint8 access_times = 0;
     if(access_times >= ACEESS_ERROR_MAX_TIMES)
     {
-    	// TODO: error process function.
-        //if(gateway_err_cb != NULL)
-        //{
-        //	gateway_err_cb(ERR_ACCESS);
-        //}
-    	 pando_device_login(login_cb);
+    	gateway_err_process(ERR_ACCESS);
 
     }
     else
@@ -126,20 +161,17 @@ access_error_cb(PANDO_ACCESS_ERROR err)
  * Returns      : none
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
-pando_gateway_init(gateway_err_callback err_cb)
+pando_gateway_init()
 {
     PRINTF("PANDO gateway initial....\n");
 
-    if(err_cb != NULL)
-    {
-    	gateway_err_cb = err_cb;
-    }
-
     espconn_secure_set_size(ESPCONN_CLIENT,5120);
+
+    load_data_from_flash();
 
 	pando_system_time_init();
 
-    load_data_from_flash();
+	pando_lan_bind_init();
 
     pando_device_login(login_cb);
 }

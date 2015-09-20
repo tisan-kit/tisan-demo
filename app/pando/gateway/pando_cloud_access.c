@@ -231,8 +231,9 @@ pando_cloud_access(access_error_callback callback)
     }
 
     char* str_device_id = pando_data_get(DATANAME_DEVICE_ID);
+
     int device_id = atol(str_device_id); // TODO: device id is 64bit, atol not support.
-    os_sprintf(str_device_id_hex, "%x", str_device_id_hex);
+    os_sprintf(str_device_id_hex, "%x", device_id);
 
     init_gateway_info();
 

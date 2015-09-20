@@ -314,15 +314,7 @@ uart_init(UartBautRate uart0_br, UartBautRate uart1_br)
     UartDev.baut_rate = uart1_br;
     uart_config(UART1);
     ETS_UART_INTR_ENABLE();
-
-    // install uart1 putc callback
-#ifdef SUBDEVICE_INNER
-    // esp8266 driver the object, uart0 used to print log.
-    os_install_putc1((void *)uart0_write_char);
-#else
-    // esp8266 used as only gateway, uart0 used to send message to other mcu, and uart1 used to print log.
-    os_install_putc1((void *)uart1_write_char);
-#endif
     
+    os_install_putc1((void *)uart0_write_char);
 }
 
