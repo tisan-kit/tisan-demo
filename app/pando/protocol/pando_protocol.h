@@ -13,8 +13,8 @@ extern "C"
 {
 #endif
 
-#include "platform_functions.h"
-#include "sub_device_protocol_tool.h"
+#include "common_functions.h"
+#include "sub_device_protocol.h"
 #include "pando_endian.h"
 
 #define MAX_PANDO_TOKEN_SIZE 16
@@ -73,6 +73,10 @@ struct protocol_base
  * 成功返回0，错误返回 -1 */
 int pando_protocol_init(struct protocol_base init_params);
 
+uint8_t *pando_get_package_begin(struct pando_buffer *buf);
+uint16_t pando_get_package_length(struct pando_buffer *buf);
+
+
 /* 动态新建一个空的缓冲区。length为缓冲区长度，offset进行简单地赋值。
  * 成功则返回缓冲区，错误则返回NULL。*/
 struct pando_buffer* pando_buffer_create(int length, int offset);
@@ -101,17 +105,8 @@ int pando_protocol_get_sub_device_id(struct pando_buffer *buf, uint16_t *sub_dev
 int pando_protocol_set_sub_device_id(struct pando_buffer *buf, uint16_t sub_device_id);
 
 
-//网关发送文件的命令后，保存需要反馈的文件命令的序列号
-int is_file_feedback(uint32_t sequence);
-void save_file_sequence();
-
 /* get command type after gateway completes decoding the command from server. */
 uint16_t pando_protocol_get_payload_type(struct pando_buffer *pdbuf);
-
-/*  */
-int is_pando_file_command(struct pando_buffer *pdbuf);
-
-char *pando_protocol_get_uri(struct pando_buffer *pdbuf);
 
 #ifdef __cplusplus
 }

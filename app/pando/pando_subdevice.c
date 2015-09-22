@@ -2,8 +2,8 @@
 #include "c_types.h"
 #include "user_interface.h"
 #include "gateway/pando_channel.h"
-#include "protocol/platform_functions.h"
-#include "protocol/sub_device_protocol_tool.h"
+#include "protocol/common_functions.h"
+#include "protocol/sub_device_protocol.h"
 #include "pando_object.h"
 
 #define CMD_QUERY_STATUS (65528)
@@ -17,18 +17,16 @@ decode_data(struct sub_device_buffer *device_buffer)
 	uint16_t tlv_type, tlv_length;
 	uint8_t *value = NULL;
 
-	struct TLV *object_param = get_sub_device_property(device_buffer, &data_body);
-	pd_printf("count: %d\n", data_body.params->count);
+	PARAMS *object_param = NULL;
+	while(object_param = get_sub_device_property(device_buffer, &data_body)){
+		pando_object* obj = find_pando_object(data_body.property_num);
+		if( NULL == obj )
+		{
+			PRINTF("object [%d] not found in list\n", data_body.property_num);
+		}
 
-	pando_object* obj = find_pando_object(data_body.property_num);
-
-	if( NULL == obj )
-	{
-		PRINTF("object [%d] not found in list\n", data_body.property_num);
+		obj->unpack(object_param);
 	}
-
-	obj->unpack(object_param,  data_body.params->count);
-
 
 }
 
@@ -36,20 +34,23 @@ static void ICACHE_FLASH_ATTR
 send_current_status()
 {
 	struct sub_device_buffer* data_buffer;
+	data_buffer = create_data_package(0);
+	if(NULL == data_buffer)
+	{
+		PRINTF("create data package error\n");
+		return;
+	}
 
 	pando_object* obj = NULL;
 	pando_objects_iterator* it = create_pando_objects_iterator();
 	while(obj = pando_objects_iterator_next(it)){
-		struct TLVs* params =  obj->pack();
-		if(0 == it->cur)
+		PARAMS* params =  create_params_block();
+		if (params == NULL)
 		{
-			data_buffer = create_data_package(obj->no, 0, params);
-			if( NULL == data_buffer)
-			{
-				PRINTF("Create data package failed.");
-			}
-
+			PRINTF("Create params block failed.\n");
+			return ;
 		}
+		obj->pack(params);
 		int ret = add_next_property(data_buffer, obj->no, params);
 
 		if (ret != 0)
@@ -71,7 +72,7 @@ static void ICACHE_FLASH_ATTR
 decode_command(struct sub_device_buffer *device_buffer)
 {
 	struct pando_command cmd_body;
-	struct TLV *cmd_param = get_sub_device_command(device_buffer, &cmd_body);
+	PARAMS *cmd_param = get_sub_device_command(device_buffer, &cmd_body);
 	if(CMD_QUERY_STATUS == cmd_body.command_id)
 	{
 		PRINTF("receive a get request\n");

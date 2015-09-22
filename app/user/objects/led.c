@@ -64,59 +64,46 @@ delete_led(struct led* led)
 	}
 }
 
-struct TLVs* ICACHE_FLASH_ATTR
-led_object_pack()
+void ICACHE_FLASH_ATTR
+led_object_pack(PARAMS * params)
 {
-	struct led* led = create_led();
-	led_get(led);
-	struct TLVs *params_block = create_params_block(TLV_TYPE_UINT8, sizeof(uint8), &led->red);
-
-	if (params_block == NULL)
+	if(NULL == params)
 	{
 		PRINTF("Create first tlv param failed.\n");
-		return NULL;
+		return;
+	}
+	struct led* led = create_led();
+	led_get(led);
+
+	if (add_next_uint8(params, led->red))
+	{
+		PRINTF("Add next tlv param failed.\n");
+		return;
 	}
 
-	if (add_next_param(params_block, TLV_TYPE_UINT8, sizeof(uint8), &led->green))
+	if (add_next_uint8(params, led->green))
 	{
-		delete_params_block(params_block);
 		PRINTF("Add next tlv param failed.\n");
-		return NULL;
+		return;
 	}
 
-	if (add_next_param(params_block, TLV_TYPE_UINT8, sizeof(uint8), &led->blue))
+	if (add_next_uint8(params, led->blue))
 	{
-		delete_params_block(params_block);
 		PRINTF("Add next tlv param failed.\n");
-		return NULL;
+		return;
 	}
 
 	delete_led(led);
-
-	return params_block;
 }
 
 void ICACHE_FLASH_ATTR
-led_object_unpack(struct TLV* params, sint16 count)
+led_object_unpack(PARAMS* params)
 {
-	int i = count;
 	struct led* led = create_led();
 
-	uint16_t tlv_type, tlv_length;
-	uint8_t value;
-
-	get_tlv_param(params, &tlv_type, &tlv_length, &value);
-	PRINTF("params: type: %02x, length: %02x, \n", tlv_type, tlv_length);
-	show_package(&value, tlv_length);
-	led->red = value;
-	get_tlv_param(params, &tlv_type, &tlv_length, &value);
-	PRINTF("params: type: %02x, length: %02x, \n", tlv_type, tlv_length);
-	show_package(&value, tlv_length);
-	led->green = value;
-	get_tlv_param(params, &tlv_type, &tlv_length, &value);
-	led->blue = value;
-	PRINTF("params: type: %02x, length: %02x, \n", tlv_type, tlv_length);
-	show_package(&value, tlv_length);
+	led->red = get_next_uint8(params);
+	led->green = get_next_uint8(params);
+	led->blue = get_next_uint8(params);
 
 	led_set(led);
 
