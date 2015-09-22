@@ -9,8 +9,8 @@
 #include "pando_channel.h"
 #include "pando_system_time.h"
 #include "mqtt/mqtt.h"
-#include "../protocol/sub_device_protocol_tool.h"
-#include "../protocol/pando_protocol_tool.h"
+#include "../protocol/sub_device_protocol.h"
+#include "../protocol/pando_protocol.h"
 
 #define PORT_STR_LEN 8
 #define DEVICE_TOKEN_LEN 16

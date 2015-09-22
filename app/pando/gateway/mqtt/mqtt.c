@@ -347,8 +347,10 @@ mqtt_tcpclient_connect_cb(void *arg)
 	espconn_regist_sentcb(client->pCon, mqtt_tcpclient_sent_cb);///////
 	INFO("MQTT: Connected to broker %s:%d\r\n", client->host, client->port);
 
+	PRINTF("%s:%p\n",__func__, client->mqtt_state.out_buffer);
 	mqtt_msg_init(&client->mqtt_state.mqtt_connection, client->mqtt_state.out_buffer, client->mqtt_state.out_buffer_length);
 	client->mqtt_state.outbound_message = mqtt_msg_connect(&client->mqtt_state.mqtt_connection, client->mqtt_state.connect_info);
+	PRINTF("%s:%p\n",__func__, client->mqtt_state.outbound_message);
 	client->mqtt_state.pending_msg_type = mqtt_get_type(client->mqtt_state.outbound_message->data);
 	client->mqtt_state.pending_msg_id = mqtt_get_id(client->mqtt_state.outbound_message->data, client->mqtt_state.outbound_message->length);
 
@@ -639,6 +641,9 @@ MQTT_Disconnect(MQTT_Client *mqttClient)
 			os_free(mqttClient->pCon->proto.tcp);
 		os_free(mqttClient->pCon);
 		mqttClient->pCon = NULL;
+		PRINTF("%s:%p\n",__func__, mqttClient->mqtt_state.out_buffer);
+
+		PRINTF("%s:%p\n",__func__, mqttClient->mqtt_state.outbound_message);
 	}
 
 	os_timer_disarm(&mqttClient->mqttTimer);
