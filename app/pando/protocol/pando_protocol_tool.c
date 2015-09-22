@@ -62,10 +62,10 @@ int FUNCTION_ATTRIBUTE pando_protocol_decode(struct pando_buffer *pdbuf, uint16_
 	struct mqtt_bin_header *m_header = (struct mqtt_bin_header *)position;
 
     //check token
-    if (check_pdbin_header(m_header))
+    /*if (check_pdbin_header(m_header))
 	{
 		return -1;
-	}
+	}*/
 
     position += GATE_HEADER_LEN;    
 	if (position > pdbuf_end)

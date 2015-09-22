@@ -21,15 +21,6 @@ uint8 pando_device_token[DEVICE_TOKEN_LEN];
 MQTT_Client mqtt_client;
 static uint8 str_device_id_hex[17];
 
-static void ICACHE_FLASH_ATTR
-access_error_exit(PANDO_ACCESS_ERROR error)
-{
-	if(error_callback != NULL)
-	{
-		error_callback(error);
-	}
-}
-
 static int ICACHE_FLASH_ATTR
 conv_addr_str(const char * ip_str, uint8 * str_ip_addr, int * port)
 {
@@ -43,7 +34,6 @@ conv_addr_str(const char * ip_str, uint8 * str_ip_addr, int * port)
     size_t ip_len = colon - ip_str;
     os_strncpy(str_ip_addr, ip_str, ip_len);
     str_ip_addr[ip_len] = '\0';
-    //ip->addr = ipaddr_addr(str_ip_addr);
 
     // port
     char str_port_addr[PORT_STR_LEN];
@@ -60,6 +50,8 @@ init_gateway_info()
 	os_memset(&gateway_info, 0, sizeof(gateway_info));
 	gateway_info.device_id = atol(pando_data_get(DATANAME_DEVICE_ID));
 	os_memcpy(gateway_info.token, pando_device_token, DEVICE_TOKEN_LEN);
+	PRINTF("token:\n");
+	show_package(gateway_info.token, DEVICE_TOKEN_LEN);
 	pando_protocol_init(gateway_info);
 }
 
@@ -74,7 +66,7 @@ pando_publish_data_channel1(uint8* buffer, uint16 length)
 
 	if (gateway_data_buffer->buffer == NULL)
 	{
-		PRINTF("construct package_to_server malloc failed.\n");
+		PRINTF("%s:malloc failed.\n", __func__);
 		return;
 	}
 
@@ -111,9 +103,8 @@ pando_publish_data_channel1(uint8* buffer, uint16 length)
 static void ICACHE_FLASH_ATTR
 mqtt_data_cb(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t data_len)
 {
-	PRINTF("mqtt receive data: length: %d\n", data_len);
 	PRINTF("mqtt topic length: %d\n", topic_len);
-	uint32 payload_length = data_len - topic_len;
+	PRINTF("mqtt data length: %d\n", data_len);
 	uint16 sub_device_id = 0;
 
 	if((topic == NULL) || (data == NULL))
@@ -150,32 +141,41 @@ mqtt_data_cb(uint32_t *args, const char* topic, uint32_t topic_len, const char *
 		return;
 	}
 	pd_buffer->buff_len = data_len;
-	pd_buffer->buffer = (uint8*)os_malloc(payload_length);
+	pd_buffer->buffer = (uint8*)os_malloc(data_len);
 	if(pd_buffer->buffer == NULL)
 	{
 		PRINTF("malloc error!\n");
 		return;
 	}
-	os_memcpy(pd_buffer->buffer, data, payload_length);
+	os_memcpy(pd_buffer->buffer, data, data_len);
 	pd_buffer->offset = 0;
 	pando_protocol_get_sub_device_id(pd_buffer, &sub_device_id);
+
+	PRINTF("package from server, get rid of mqtt head:\n");
+	show_package(pd_buffer->buffer, pd_buffer->buff_len);
+	if(pando_protocol_decode(pd_buffer, payload_type) != 0)
+	{
+		PRINTF("the data from server is wrong!\n");
+		return;
+	}
+
+	struct sub_device_buffer *device_buffer = (struct sub_device_buffer *)os_malloc(sizeof(struct sub_device_buffer));
+	device_buffer->buffer_length = pd_buffer->buff_len - pd_buffer->offset;
+	device_buffer->buffer = (uint8*)os_malloc(device_buffer->buffer_length);
+	os_memcpy(device_buffer->buffer, pd_buffer->buffer + pd_buffer->offset, device_buffer->buffer_length);
+	pando_buffer_delete(pd_buffer);
+
 	if(sub_device_id == 1 || sub_device_id == 65535) //65535 is broadcast id.
 	{
-		channel_send_to_subdevice(PANDO_CHANNEL_PORT_1, pd_buffer->buffer, pd_buffer->buff_len);
+		channel_send_to_subdevice(PANDO_CHANNEL_PORT_1, device_buffer->buffer,device_buffer->buffer_length);
 	}
 
-	if(pd_buffer != NULL)
+	else if(sub_device_id == 0)
 	{
-		if(pd_buffer->buffer != NULL)
-		{
-			os_free(pd_buffer->buffer);
-			pd_buffer->buffer = NULL;
-		}
-		os_free(pd_buffer);
-		pd_buffer = NULL;
+		channel_send_to_subdevice(PANDO_CHANNEL_PORT_0, device_buffer->buffer,device_buffer->buffer_length);
 	}
+	delete_device_package(device_buffer);
 }
-
 
 static void ICACHE_FLASH_ATTR
 mqtt_published_cb(uint32_t *arg)
@@ -197,6 +197,15 @@ static void ICACHE_FLASH_ATTR mqtt_disconnect_cb(uint32_t* arg)
 	PRINTF("MQTT: Disconnected\r\n");
 	MQTT_Client* client = (MQTT_Client*)arg;
 }
+static void ICACHE_FLASH_ATTR mqtt_error_cb(uint32_t* arg)
+{
+	PRINTF("MQTT: connecting error\r\n");
+	if(error_callback != NULL)
+	{
+		error_callback(ERR_CONNECT);
+	}
+}
+
 
 
 /******************************************************************************
@@ -210,7 +219,8 @@ pando_cloud_access(access_error_callback callback)
 {
     PRINTF("PANDO: begin access cloud...\n");
 
-    if(error_callback != NULL)
+    static bool s_access_flag = 0;
+    if(callback != NULL)
     {
         error_callback = callback;
     }
@@ -219,7 +229,7 @@ pando_cloud_access(access_error_callback callback)
     if( NULL == access_addr )
     {
         PRINTF("no access server address found...\n");
-        return access_error_exit(ERR_OTHER);
+        return error_callback(ERR_OTHER);
     }
 
     int port;
@@ -227,7 +237,7 @@ pando_cloud_access(access_error_callback callback)
     if(0 != (conv_addr_str(access_addr, ip_string, &port)))
     {
         PRINTF("wrong access server address...\n");
-        return access_error_exit(ERR_OTHER);
+        return error_callback(ERR_OTHER);
     }
 
     char* str_device_id = pando_data_get(DATANAME_DEVICE_ID);
@@ -238,11 +248,19 @@ pando_cloud_access(access_error_callback callback)
     init_gateway_info();
 
     MQTT_InitConnection(&mqtt_client, ip_string, port, 0);
+    if(s_access_flag == 1)
+    {
+    	PRINTF("lcg\n");
+    	MQTT_Connect(&mqtt_client);
+    	return;
+    }
     MQTT_InitClient(&mqtt_client, str_device_id_hex, "", "", 30, 1);
     MQTT_OnConnected(&mqtt_client, mqtt_connect_cb);
     MQTT_OnDisconnected(&mqtt_client, mqtt_disconnect_cb);
     MQTT_OnPublished(&mqtt_client, mqtt_published_cb);
     MQTT_OnData(&mqtt_client, mqtt_data_cb);
+    MQTT_OnConnect_Error(&mqtt_client, mqtt_error_cb);
+    s_access_flag = 1;
     MQTT_Connect(&mqtt_client);
     // to consider: reconnect.
 }

@@ -84,6 +84,7 @@ typedef enum {
 
 typedef void (*MqttCallback)(uint32_t *args);
 typedef void (*MqttDataCallback)(uint32_t *args, const char* topic, uint32_t topic_len, const char *data, uint32_t lengh);
+typedef void *MqttErrorCallback;
 
 typedef struct  {
 	struct espconn *pCon;
@@ -97,6 +98,7 @@ typedef struct  {
 	MqttCallback disconnectedCb;
 	MqttCallback publishedCb;
 	MqttDataCallback dataCb;
+	MqttCallback errorCb;
 	ETSTimer mqttTimer;
 	uint32_t keepAliveTick;
 	uint32_t reconnectTick;
@@ -130,6 +132,7 @@ void ICACHE_FLASH_ATTR MQTT_OnConnected(MQTT_Client *mqttClient, MqttCallback co
 void ICACHE_FLASH_ATTR MQTT_OnDisconnected(MQTT_Client *mqttClient, MqttCallback disconnectedCb);
 void ICACHE_FLASH_ATTR MQTT_OnPublished(MQTT_Client *mqttClient, MqttCallback publishedCb);
 void ICACHE_FLASH_ATTR MQTT_OnData(MQTT_Client *mqttClient, MqttDataCallback dataCb);
+void ICACHE_FLASH_ATTR MQTT_OnConnect_Error(MQTT_Client *mqttClient, MqttCallback error_cb);
 BOOL ICACHE_FLASH_ATTR MQTT_Subscribe(MQTT_Client *client, char* topic, uint8_t qos);
 void ICACHE_FLASH_ATTR MQTT_Connect(MQTT_Client *mqttClient);
 void ICACHE_FLASH_ATTR MQTT_Disconnect(MQTT_Client *mqttClient);

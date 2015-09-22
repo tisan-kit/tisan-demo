@@ -23,8 +23,6 @@ typedef enum {
     ERR_ACCESS
 }GATEWAY_ERROR;
 
-#define ACEESS_ERROR_MAX_TIMES 3
-
 extern load_data_from_flash();
 
 static os_timer_t wifi_check_timer;
@@ -140,17 +138,8 @@ access_error_cb(PANDO_ACCESS_ERROR err)
 {
     PRINTF("PANDO access error: %d\n", err);
 
-    static uint8 access_times = 0;
-    if(access_times >= ACEESS_ERROR_MAX_TIMES)
-    {
-    	gateway_err_process(ERR_ACCESS);
+    gateway_err_process(ERR_ACCESS);
 
-    }
-    else
-    {
-    	access_times++;
-        pando_cloud_access(access_error_cb);
-    }
 }
 
 /******************************************************************************
@@ -173,6 +162,10 @@ pando_gateway_init()
 
 	pando_lan_bind_init();
 
-    pando_device_login(login_cb);
+	pando_zero_device_init();
+
+	os_timer_disarm(&wifi_check_timer);
+	os_timer_setfn(&wifi_check_timer, (os_timer_func_t *)wifi_connect_check, NULL);
+	os_timer_arm(&wifi_check_timer, 3000, 1);
 }
 
