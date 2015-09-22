@@ -13,12 +13,14 @@
 #define PANDO_OBJECTS_H_
 
 #include "c_types.h"
-#include "protocol/sub_device_protocol_tool.h"
+#include "protocol/sub_device_protocol.h"
+
+typedef struct TLVs PARAMS;
 
 typedef struct {
 	uint8 no;
-	struct TLVs* (*pack)();
-	void (*unpack)(struct TLV*, sint16);
+	void (*pack)(PARAMS*);
+	void (*unpack)(PARAMS*);
 }pando_object;
 
 typedef struct {
