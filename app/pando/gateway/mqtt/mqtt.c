@@ -131,7 +131,7 @@ mqtt_tcpclient_recv(void *arg, char *pdata, unsigned short len)
 
 READPACKET:
 	INFO("TCP: data received %d bytes:\r\n", len);
-	//show_package(pdata, len);
+	show_package(pdata, len);
 	if(len < MQTT_BUF_SIZE && len > 0){
 		os_memcpy(client->mqtt_state.in_buffer, pdata, len);
 
@@ -307,6 +307,9 @@ void ICACHE_FLASH_ATTR mqtt_timer(void *arg)
 			client->connState = TCP_RECONNECT;
 			system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 		}
+	}else if(client->connState == TCP_CONNECTING){
+		client->connState = TCP_CONNECTING_ERROR;
+		system_os_post(MQTT_TASK_PRIO, 0, (os_param_t)client);
 	}
 	if(client->sendTimeout > 0)
 		client->sendTimeout --;
@@ -487,6 +490,10 @@ MQTT_Task(os_event_t *e)
 			break;
 		}
 		break;
+	case TCP_CONNECTING_ERROR:
+		MQTT_Disconnect(client);
+		(client->errorCb)((uint32_t*)client);
+		break;
 	}
 }
 
@@ -641,6 +648,13 @@ MQTT_OnConnected(MQTT_Client *mqttClient, MqttCallback connectedCb)
 {
 	mqttClient->connectedCb = connectedCb;
 }
+
+void ICACHE_FLASH_ATTR
+MQTT_OnConnect_Error(MQTT_Client *mqttClient, MqttCallback error_cb)
+{
+	mqttClient->errorCb= error_cb;
+}
+
 
 void ICACHE_FLASH_ATTR
 MQTT_OnDisconnected(MQTT_Client *mqttClient, MqttCallback disconnectedCb)
