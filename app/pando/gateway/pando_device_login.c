@@ -103,6 +103,7 @@ http_callback_login(char * response, int http_status, char * full_response)
     PRINTF("device login success, access_addr : %s\n", access_addr);
 
     pando_data_set(DATANAME_ACCESS_ADDR, access_addr);
+    pando_data_set(DATANAME_ACCESS_TOKEN, access_token);
     if(device_login_callback != NULL) 
     {
         device_login_callback(LOGIN_OK);

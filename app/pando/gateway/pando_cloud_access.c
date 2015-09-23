@@ -254,7 +254,11 @@ pando_cloud_access(access_error_callback callback)
     	MQTT_Connect(&mqtt_client);
     	return;
     }
-    MQTT_InitClient(&mqtt_client, str_device_id_hex, "", "", 30, 1);
+
+    char access_token_str[64];
+    char* token_str = pando_data_get(DATANAME_ACCESS_TOKEN);
+    os_memcpy(access_token_str, token_str, os_strlen(token_str));
+    MQTT_InitClient(&mqtt_client, str_device_id_hex, "", access_token_str, 30, 1);
     MQTT_OnConnected(&mqtt_client, mqtt_connect_cb);
     MQTT_OnDisconnected(&mqtt_client, mqtt_disconnect_cb);
     MQTT_OnPublished(&mqtt_client, mqtt_published_cb);
