@@ -57,6 +57,8 @@ send_current_status()
 		{
 			PRINTF("add_next_property failed.");
 		}
+
+
 		delete_params_block(params);
 
 	}
@@ -64,7 +66,6 @@ send_current_status()
 
 	channel_send_to_device(PANDO_CHANNEL_PORT_1, data_buffer->buffer, data_buffer->buffer_length);
 	show_package(data_buffer->buffer, data_buffer->buffer_length);
-
 	delete_device_package(data_buffer);
 }
 
@@ -76,7 +77,7 @@ decode_command(struct sub_device_buffer *device_buffer)
 	if(CMD_QUERY_STATUS == cmd_body.command_id)
 	{
 		PRINTF("receive a get request\n");
-	    subdevice_data_send();
+		send_current_status();
 	}
 }
 
@@ -87,6 +88,9 @@ pando_subdevice_recv(uint8_t * buffer, uint16_t length)
 	{
 		return;
 	}
+
+	PRINTF("subdevive receive a package: \n");
+	show_package(buffer, length);
 
 	struct sub_device_buffer *device_buffer = (struct sub_device_buffer *)pd_malloc(sizeof(struct sub_device_buffer));
 	device_buffer->buffer_length = length;

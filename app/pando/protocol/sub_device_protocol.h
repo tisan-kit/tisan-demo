@@ -39,15 +39,15 @@ extern "C"
 
 struct device_header
 {
-    uint8_t  magic;         /* 开始标志 (0x34) */
-    uint8_t  crc;           /* 校验和 */
-    uint16_t payload_type;  /* 载荷类型 */
-    uint16_t payload_len;   /* 载荷长度 */
-    uint16_t flags;         /* 标志位 */
-    uint32_t frame_seq;     /* 帧序列 */
+    uint8_t  magic;         /* 寮�濮嬫爣蹇� (0x34) */
+    uint8_t  crc;           /* 鏍￠獙鍜� */
+    uint16_t payload_type;  /* 杞借嵎绫诲瀷 */
+    uint16_t payload_len;   /* 杞借嵎闀垮害 */
+    uint16_t flags;         /* 鏍囧織浣� */
+    uint32_t frame_seq;     /* 甯у簭鍒� */
 };
 
-/*TLV信息区，包含count*/
+/*TLV淇℃伅鍖猴紝鍖呭惈count*/
 struct TLV 
 {
 	uint16_t type;
@@ -61,29 +61,29 @@ struct TLVs
     //struct TLV tlv[];
 };
 
-/*命令，事件和数据具体的数据结构*/
+/*鍛戒护锛屼簨浠跺拰鏁版嵁鍏蜂綋鐨勬暟鎹粨鏋�*/
 struct pando_command
 {
-	uint16_t sub_device_id;   /* 子设备ID */
-	uint16_t command_id;      /* 命令ID */
-	uint16_t priority;        /* 优先级 */
-	struct TLVs params[1];          /* 参数 */
+	uint16_t sub_device_id;   /* 瀛愯澶嘔D */
+	uint16_t command_id;      /* 鍛戒护ID */
+	uint16_t priority;        /* 浼樺厛绾� */
+	struct TLVs params[1];          /* 鍙傛暟 */
 };
 
 struct pando_event
 {
-	uint16_t sub_device_id;   /* 子设备ID */
-	uint16_t event_num;        /* 事件ID */
+	uint16_t sub_device_id;   /* 瀛愯澶嘔D */
+	uint16_t event_num;        /* 浜嬩欢ID */
     uint16_t priority;
-	struct TLVs params[1];          /* 参数 */
+	struct TLVs params[1];          /* 鍙傛暟 */
 };
 
-/*属性的定义*/
+/*灞炴�х殑瀹氫箟*/
 struct pando_property
 {
-	uint16_t sub_device_id;   /* 子设备ID */
-	uint16_t property_num;	/* 属性编号 */
-	struct TLVs params[1];          /* 参数 */
+	uint16_t sub_device_id;   /* 瀛愯澶嘔D */
+	uint16_t property_num;	/* 灞炴�х紪鍙� */
+	struct TLVs params[1];          /* 鍙傛暟 */
 };
 
 struct sub_device_buffer
@@ -101,17 +101,19 @@ struct sub_device_base_params
 #pragma pack()
 
 
-//初始化子设备模块
+//鍒濆鍖栧瓙璁惧妯″潡
 int init_sub_device(struct sub_device_base_params base_params);
 
-//在创建数据包或者事件包前，先创建好参数的信息区, 同时添加第一个参数，待信息区被create_event等函数成功使用后，要将信息区delete
+//鍦ㄥ垱寤烘暟鎹寘鎴栬�呬簨浠跺寘鍓嶏紝鍏堝垱寤哄ソ鍙傛暟鐨勪俊鎭尯, 鍚屾椂娣诲姞绗竴涓弬鏁帮紝寰呬俊鎭尯琚玞reate_event绛夊嚱鏁版垚鍔熶娇鐢ㄥ悗锛岃灏嗕俊鎭尯delete
 struct TLVs *create_params_block();
 
-//创建事件包，返回缓冲区，
-//数据发送完成后，要将返回的缓冲区delete掉
+//鍒涘缓浜嬩欢鍖咃紝杩斿洖缂撳啿鍖猴紝
+//鏁版嵁鍙戦�佸畬鎴愬悗锛岃灏嗚繑鍥炵殑缂撳啿鍖篸elete鎺�
 struct sub_device_buffer *create_command_package(uint16_t flags);
 struct sub_device_buffer *create_event_package(uint16_t flags);
 struct sub_device_buffer *create_data_package(uint16_t flags);
+
+uint16_t get_sub_device_payloadtype(struct sub_device_buffer *package);
 
 int finish_package(struct sub_device_buffer *package_buf);
 
@@ -124,7 +126,7 @@ int add_event(struct sub_device_buffer *event_package, uint16_t event_num,
     uint16_t priority, struct TLVs *event_params);
 
 
-//解析命令包,command_body传出command_id、参数个数等信息,返回第一个参数的指针，用于get_tlv_param获取参数
+//瑙ｆ瀽鍛戒护鍖�,command_body浼犲嚭command_id銆佸弬鏁颁釜鏁扮瓑淇℃伅,杩斿洖绗竴涓弬鏁扮殑鎸囬拡锛岀敤浜巊et_tlv_param鑾峰彇鍙傛暟
 struct TLVs *get_sub_device_command(struct sub_device_buffer *device_buffer, struct pando_command *command_body);
 struct TLVs *get_sub_device_event(struct sub_device_buffer *device_buffer, struct pando_event *event_body);
 
@@ -132,7 +134,7 @@ struct TLVs *get_sub_device_event(struct sub_device_buffer *device_buffer, struc
 struct TLVs *get_sub_device_property(struct sub_device_buffer *device_buffer, struct pando_property *property_body);
 
 
-//删除子设备缓冲区，如果为参数创建过信息区，还需要删除信息区
+//鍒犻櫎瀛愯澶囩紦鍐插尯锛屽鏋滀负鍙傛暟鍒涘缓杩囦俊鎭尯锛岃繕闇�瑕佸垹闄や俊鎭尯
 void delete_device_package(struct sub_device_buffer *device_buffer);
 void delete_params_block(struct TLVs *params_block);
 
@@ -156,7 +158,7 @@ uint8_t     get_next_bool(struct TLVs *params);
 void        *get_next_uri(struct TLVs *params, uint16_t *length);
 void        *get_next_bytes(struct TLVs *params, uint16_t *length);
 
-//多次调用直至添加完所有参数
+//澶氭璋冪敤鐩磋嚦娣诲姞瀹屾墍鏈夊弬鏁�
 int add_next_param(struct TLVs *params_block, uint16_t next_type, uint16_t next_length, void *next_value);
 int    add_next_uint8(struct TLVs *params, uint8_t next_value);
 int    add_next_uint16(struct TLVs *params, uint16_t next_value);

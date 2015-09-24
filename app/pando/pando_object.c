@@ -24,7 +24,7 @@ register_pando_object(pando_object object)
 		return;
 	}
 
-	s_pando_object_list[s_pando_object_list_idx++];
+	s_pando_object_list[s_pando_object_list_idx++] = object;
 }
 
 pando_object* ICACHE_FLASH_ATTR

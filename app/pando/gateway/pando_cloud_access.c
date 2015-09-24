@@ -167,6 +167,7 @@ mqtt_data_cb(uint32_t *args, const char* topic, uint32_t topic_len, const char *
 
 	if(sub_device_id == 1 || sub_device_id == 65535) //65535 is broadcast id.
 	{
+		PRINTF("transfer data to sub device: %d\n", sub_device_id);
 		channel_send_to_subdevice(PANDO_CHANNEL_PORT_1, device_buffer->buffer,device_buffer->buffer_length);
 	}
 

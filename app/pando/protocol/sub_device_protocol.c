@@ -22,15 +22,14 @@ struct property_indicator
 
 static struct property_indicator s_current_property;
 static struct params_block_indicator s_current_param;
-struct sub_device_base_params base_params;	//子设备的基本参数
-static uint16_t current_tlv_block_size = 0;	//当前信息区的大小，包含count的大小
+struct sub_device_base_params base_params;	//瀛愯澶囩殑鍩烘湰鍙傛暟
+static uint16_t current_tlv_block_size = 0;	//褰撳墠淇℃伅鍖虹殑澶у皬锛屽寘鍚玞ount鐨勫ぇ灏�
 static uint16_t tlv_block_buffer_size;
 
 static uint16_t get_tlv_count(struct TLVs *params_block);
 static uint16_t  get_tlv_type(struct TLV *params_in);
 static uint16_t  get_tlv_len(struct TLV *params_in);
 static struct TLV *  get_tlv_value(struct TLV *params_in, void *value);
-static uint16_t get_sub_device_payloadtype(struct sub_device_buffer *package);
 static struct TLV *get_tlv_param(struct TLV *params_in, uint16_t *type, uint16_t *length, void *value);
 
 
@@ -155,7 +154,7 @@ struct TLVs * FUNCTION_ATTRIBUTE create_params_block()
 	struct TLVs *tlv_block = NULL;
     uint8_t need_length;
 
-	current_tlv_block_size = 0;		//确保每次新建tlv信息区时，信息区大小的计数都是正确的
+	current_tlv_block_size = 0;		//纭繚姣忔鏂板缓tlv淇℃伅鍖烘椂锛屼俊鎭尯澶у皬鐨勮鏁伴兘鏄纭殑
 
     tlv_block_buffer_size = DEFAULT_TLV_BLOCK_SIZE;
 	tlv_block = (struct TLVs *)pd_malloc(tlv_block_buffer_size);
@@ -164,8 +163,8 @@ struct TLVs * FUNCTION_ATTRIBUTE create_params_block()
 	{
 		return NULL;
 	}
-	tlv_block->count = 0;	//初始化个数为0
-	current_tlv_block_size = sizeof(struct TLVs);		//没有添加param时，block的内存占用大小仅仅是个数
+	tlv_block->count = 0;	//鍒濆鍖栦釜鏁颁负0
+	current_tlv_block_size = sizeof(struct TLVs);		//娌℃湁娣诲姞param鏃讹紝block鐨勫唴瀛樺崰鐢ㄥぇ灏忎粎浠呮槸涓暟
 
 	return tlv_block;
 }
@@ -179,7 +178,7 @@ int FUNCTION_ATTRIBUTE add_next_param(struct TLVs *params_block, uint16_t next_t
 	uint8_t tmp_value[8];
     uint8_t *tlv_position;
 	struct TLVs *new_property_block = NULL;
-	uint16_t current_count = net16_to_host(params_block->count);	//由于create的时候就对该值进行了端转换，因此需要回转
+	uint16_t current_count = net16_to_host(params_block->count);	//鐢变簬create鐨勬椂鍊欏氨瀵硅鍊艰繘琛屼簡绔浆鎹紝鍥犳闇�瑕佸洖杞�
 
     need_length = is_tlv_need_length(next_type);
     if (1 == need_length)
@@ -199,7 +198,7 @@ int FUNCTION_ATTRIBUTE add_next_param(struct TLVs *params_block, uint16_t next_t
         return -1;
     }
     
-	//信息区扩容
+	//淇℃伅鍖烘墿瀹�
 	if (current_tlv_block_size + next_length + sizeof(struct TLV) 
         - (!need_length) * sizeof(next_length) > tlv_block_buffer_size)
 	{
@@ -213,10 +212,10 @@ int FUNCTION_ATTRIBUTE add_next_param(struct TLVs *params_block, uint16_t next_t
 	current_count++;
 	tlv_position = (uint8_t *)params_block + current_tlv_block_size;
 
-	//将count保存为网络字节序，便于创建事件或数据包时直接赋值
+	//灏哻ount淇濆瓨涓虹綉缁滃瓧鑺傚簭锛屼究浜庡垱寤轰簨浠舵垨鏁版嵁鍖呮椂鐩存帴璧嬪��
 	params_block->count = host16_to_net(current_count);
 	
-	//复制tlv内容，并大小端转换,修正tlv长度和type的设置方式，解决跨字错误
+	//澶嶅埗tlv鍐呭锛屽苟澶у皬绔浆鎹�,淇tlv闀垮害鍜宼ype鐨勮缃柟寮忥紝瑙ｅ喅璺ㄥ瓧閿欒
 	type = host16_to_net(next_type);
 	pd_memcpy(tlv_position, &type, sizeof(type));
     tlv_position += sizeof(type);
@@ -324,7 +323,7 @@ struct TLVs * FUNCTION_ATTRIBUTE get_sub_device_command(
 {
 	struct pando_command *tmp_body = (struct pando_command *)(device_buffer->buffer + DEV_HEADER_LEN);
 
-	//需要对包头进行校验，尚未编写
+	//闇�瑕佸鍖呭ご杩涜鏍￠獙锛屽皻鏈紪鍐�
 	struct device_header *head = (struct device_header *)device_buffer->buffer;
 	base_params.command_sequence = net32_to_host(head->frame_seq);
     command_body->sub_device_id = net16_to_host(tmp_body->sub_device_id);

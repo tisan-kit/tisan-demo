@@ -17,6 +17,7 @@
 #include "user_interface.h"
 #include "../peripheral/peri_key.h"
 #include "wifi_config.h"
+#include "../pando/pando_framework.h"
 
 static void ICACHE_FLASH_ATTR
 user_key_long_press_cb()
@@ -39,6 +40,6 @@ void user_init(void)
 
 	led_object_init();
 
-	pando_gateway_init();
+	pando_framework_init();
 }
 

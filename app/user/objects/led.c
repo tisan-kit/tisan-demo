@@ -42,9 +42,9 @@ led_get(struct led* value)
 {
 	struct LIGHT_PARAM light_value;
 	light_value = peri_rgb_light_param_get();
-	light_value.pwm_duty[0] = value->red;
-	light_value.pwm_duty[1] = value->green;
-	light_value.pwm_duty[2] = value->blue;
+	value->red = light_value.pwm_duty[0];
+	value->green = light_value.pwm_duty[1];
+	value->blue = light_value.pwm_duty[2];
 }
 
 
@@ -72,6 +72,7 @@ led_object_pack(PARAMS * params)
 		PRINTF("Create first tlv param failed.\n");
 		return;
 	}
+
 	struct led* led = create_led();
 	led_get(led);
 
