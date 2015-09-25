@@ -32,9 +32,9 @@ static DHT_Sensor dht_sensor;
 #define sleepms(x) os_delay_us(x*1000);
 /******************************************************************************
  * FunctionName : scale_humidity
- * Description  : key's short press function, needed to be installed
- * Parameters   : none
- * Returns      : none
+ * Description  : get humidity value
+ * Parameters   : DHTType sensor_type, int *data
+ * Returns      : humidity
 *******************************************************************************/
 static inline
 float scale_humidity(DHTType sensor_type, int *data)
@@ -50,10 +50,10 @@ float scale_humidity(DHTType sensor_type, int *data)
 	}
 }
 /******************************************************************************
- * FunctionName : peri_key_short_press
- * Description  : key's short press function, needed to be installed
- * Parameters   : none
- * Returns      : none
+ * FunctionName : scale_temperature
+ * Description  : get scale_temperature value
+ * Parameters   : DHTType sensor_type, int *data
+ * Returns      : temperature
 *******************************************************************************/
 static inline
 float scale_temperature(DHTType sensor_type, int *data)
@@ -74,10 +74,10 @@ float scale_temperature(DHTType sensor_type, int *data)
 	}
 }
 /******************************************************************************
- * FunctionName : peri_key_short_press
- * Description  : key's short press function, needed to be installed
- * Parameters   : none
- * Returns      : none
+ * FunctionName : DHTFloat2String
+ * Description  : turn float to string
+ * Parameters   : char* buffer, float value
+ * Returns      : string buffer
 *******************************************************************************/
 char* ICACHE_FLASH_ATTR
 DHTFloat2String(char* buffer, float value)
@@ -86,13 +86,13 @@ DHTFloat2String(char* buffer, float value)
   return buffer;
 }
 /******************************************************************************
- * FunctionName : peri_key_short_press
- * Description  : key's short press function, needed to be installed
- * Parameters   : none
- * Returns      : none
+ * FunctionName : peri_dht_read
+ * Description  : read dhtxx device
+ * Parameters   : DHT_Sensor_Data *output
+ * Returns      : true/false
 *******************************************************************************/
 bool ICACHE_FLASH_ATTR
-dht_read(DHT_Sensor_Data *output)
+peri_dht_read(DHT_Sensor_Data *output)
 {
 	int counter = 0;
 	int laststate = 1;
@@ -187,13 +187,13 @@ dht_read(DHT_Sensor_Data *output)
 }
 
 /******************************************************************************
- * FunctionName : peri_key_short_press
- * Description  : key's short press function, needed to be installed
- * Parameters   : none
+ * FunctionName : peri_dht_init
+ * Description  : dhtxx device initialize
+ * Parameters   : DHT_Sensor
  * Returns      : none
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
-dht_init(DHT_Sensor* sensor)
+peri_dht_init(DHT_Sensor* sensor)
 {
 	PRINTF("sensor type:%d", sensor->type);
 	PRINTF("sensor pin:%d", sensor->pin);

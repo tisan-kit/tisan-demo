@@ -123,48 +123,4 @@ void key_intr_handler(struct key_param *key)
         }
 
 }
-/******************************************************************************
- * FunctionName : get_gpio_id
- * Description  : via gpio_name get gpio_id
- * Parameters   : uint32 gpio_name
- * Returns      : none
-*******************************************************************************/
-uint8 get_gpio_id(uint32 io_name)
-{
-	uint8 io_id;
-	switch(io_name)
-	{
-		case PERIPHS_IO_MUX_MTDI_U:         io_id=12;  break;
-		case PERIPHS_IO_MUX_MTCK_U:    		io_id=13;  break;
-		case PERIPHS_IO_MUX_MTMS_U:    		io_id=14;  break;
-		case PERIPHS_IO_MUX_MTDO_U:   		io_id=15;  break;
-		case PERIPHS_IO_MUX_U0RXD_U:    	io_id=3;   break;
-		case PERIPHS_IO_MUX_U0TXD_U:    	io_id=1;   break;
-		case PERIPHS_IO_MUX_SD_DATA2_U:     io_id=9;   break;
-		case PERIPHS_IO_MUX_SD_DATA3_U:     io_id=10;  break;
-		case PERIPHS_IO_MUX_GPIO0_U:    	io_id=0;   break;
-		case PERIPHS_IO_MUX_GPIO2_U:    	io_id=2;   break;
-		case PERIPHS_IO_MUX_GPIO4_U:    	io_id=4;   break;
-		case PERIPHS_IO_MUX_GPIO5_U:    	io_id=5;   break;
-		default :                        	io_id=-1;  break;
-	}
-	return io_id;
-}
-/******************************************************************************
- * FunctionName : get_gpio_func
- * Description  : via gpio_name get gpio_func
- * Parameters   : uint32 gpio_name
- * Returns      : none
-*******************************************************************************/
-uint8 get_gpio_func(uint32 io_name)
-{
-	uint8 io_func,io_id;
-	io_id=get_gpio_id(io_name);
-	if(io_id>10)
-		io_func=3;
-	else if(io_id>0)
-		io_func=0;
 
-
-	return io_func;
-}
