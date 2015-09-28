@@ -14,7 +14,7 @@
 
 #ifdef  TEST_ENVEROMENT
 
-#define PANDO_API_URL "http://testapi.pandocloud.com"
+#define PANDO_API_URL "http://api.pandocloud.com"
 
 #else
 

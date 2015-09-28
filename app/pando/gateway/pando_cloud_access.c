@@ -220,7 +220,8 @@ pando_cloud_access(access_error_callback callback)
 {
     PRINTF("PANDO: begin access cloud...\n");
 
-    static bool s_access_flag = 0;
+    PRINTF("before access:\n");
+    PRINTF("available heap size:%d\n", system_get_free_heap_size());
     if(callback != NULL)
     {
         error_callback = callback;
@@ -249,12 +250,8 @@ pando_cloud_access(access_error_callback callback)
     init_gateway_info();
 
     MQTT_InitConnection(&mqtt_client, ip_string, port, 0);
-    if(s_access_flag == 1)
-    {
-    	PRINTF("lcg\n");
-    	MQTT_Connect(&mqtt_client);
-    	return;
-    }
+
+    MQTT_Connect(&mqtt_client);
 
     char access_token_str[64];
     char* token_str = pando_data_get(DATANAME_ACCESS_TOKEN);
@@ -265,7 +262,8 @@ pando_cloud_access(access_error_callback callback)
     MQTT_OnPublished(&mqtt_client, mqtt_published_cb);
     MQTT_OnData(&mqtt_client, mqtt_data_cb);
     MQTT_OnConnect_Error(&mqtt_client, mqtt_error_cb);
-    s_access_flag = 1;
+    PRINTF("before mqtt connect:\n");
+    PRINTF("available heap size:%d\n", system_get_free_heap_size());
     MQTT_Connect(&mqtt_client);
     // to consider: reconnect.
 }

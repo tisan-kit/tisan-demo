@@ -102,7 +102,7 @@ wifi_config(wifi_config_callback config_cb)
     }
 
     s_config_start_flag = 1;
-    smartconfig_set_type(SC_TYPE_ESPTOUCH);
+    smartconfig_set_type(SC_TYPE_ESPTOUCH_AIRKISS);
     wifi_set_opmode(STATION_MODE);
     smartconfig_start(smartconfig_done);
 }

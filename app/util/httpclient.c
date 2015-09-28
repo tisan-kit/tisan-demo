@@ -344,7 +344,6 @@ static void ICACHE_FLASH_ATTR dns_callback(const char * hostname, ip_addr_t * ad
 		espconn_regist_disconcb(conn, disconnect_callback);
 		espconn_regist_reconcb(conn, reconnect_callback);
 		PRINTF("start connect http server\n");
-		PRINTF("before connect, available heap size:%d\n", system_get_free_heap_size());
 		// TODO: consider using espconn_regist_reconcb (for timeouts?)
 		// cf esp8266_sdk_v0.9.1/examples/at/user/at_ipCmd.c  (TCP ARQ retransmission?)
 		espconn_secure_connect(conn);
@@ -362,7 +361,6 @@ void ICACHE_FLASH_ATTR http_raw_request(const char * hostname, int port, const c
 	http_flag = 1;
 
 	PRINTF("DNS request\n");
-	PRINTF("before dns: available heap size:%d\n", system_get_free_heap_size());
 	os_timer_disarm(&timeout_timer);
 	os_timer_setfn(&timeout_timer, (os_timer_func_t *)http_exit, HTTP_TIMEOUT);
 	os_timer_arm(&timeout_timer, 20000, 0);
