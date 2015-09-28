@@ -3,7 +3,7 @@
 //
 //  Create By TangWenhan On 14/12/24.
 
-#include "pando_protocol_tool.h"
+#include "pando_protocol.h"
 
 static int FUNCTION_ATTRIBUTE check_pdbin_header(struct mqtt_bin_header *bin_header);
 static int FUNCTION_ATTRIBUTE init_device_header(struct device_header *header, struct mqtt_bin_header *bin_header,
@@ -99,7 +99,6 @@ int FUNCTION_ATTRIBUTE pando_protocol_encode(struct pando_buffer *pdbuf, uint16_
         pd_printf("Incorrect encode buffer length.\n");
         return -1;
     }
-
 
     pd_memcpy(payload_type, &(header->payload_type), sizeof(header->payload_type));
     *payload_type = net16_to_host(*payload_type);
@@ -259,7 +258,7 @@ int FUNCTION_ATTRIBUTE is_file_feedback(uint32_t sequence)
 	return (sequence == file_cmd_sequence)?1:0;
 }
 
-
+#if 0
 char *FUNCTION_ATTRIBUTE pando_protocol_get_uri(struct pando_buffer *pdbuf)
 {
 	if (pdbuf == NULL)
@@ -294,7 +293,7 @@ char *FUNCTION_ATTRIBUTE pando_protocol_get_uri(struct pando_buffer *pdbuf)
 
 	return NULL;
 }
-
+#endif
 
 
 //pdbuf points to the buffer contains command from server ,it's big endian.
@@ -322,4 +321,15 @@ int FUNCTION_ATTRIBUTE is_pando_file_command(struct pando_buffer *pdbuf)
         return 0;
     }
 }
+
+uint8_t FUNCTION_ATTRIBUTE *pando_get_package_begin(struct pando_buffer *buf)
+{
+    return (buf->buffer + buf->offset);
+}
+uint16_t FUNCTION_ATTRIBUTE pando_get_package_length(struct pando_buffer *buf)
+{
+    return (buf->buff_len - buf->offset);
+}
+
+
 

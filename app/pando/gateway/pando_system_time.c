@@ -62,7 +62,7 @@ pando_get_system_time(void)
 static void ICACHE_FLASH_ATTR
 add_time(void *arg)
 {
-    system_time = system_time + 6000;
+    system_time = system_time + 60000;
     int i = 0;
     for(i = 0; i<sizeof(system_time); i++)
     {

@@ -1,5 +1,5 @@
 /*******************************************************
- * File name: gateway_config.h
+ * File name: gateway_defs.h
  * Author:Chongguang Li
  * Versions:1.0
  * Description:This module is to used to define the parameter and structure used in gateway.
@@ -9,12 +9,12 @@
  *     Modification:    
  *********************************************************/
  
-#ifndef __GATEWAY_CONFIG_H__
-#define __GATEWAY_CONFIG_H__
+#ifndef __GATEWAY_DEFS_H__
+#define __GATEWAY_DEFS_H__
 
 #ifdef  TEST_ENVEROMENT
 
-#define PANDO_API_URL "http://testapi.pandocloud.com"
+#define PANDO_API_URL "http://api.pandocloud.com"
 
 #else
 

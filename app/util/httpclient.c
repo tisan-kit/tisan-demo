@@ -58,19 +58,16 @@ free_req(void)
 
 	if(http_hostname != NULL)
 	{
-		PRINTF("before free/point of http_hostname:%p\n", http_hostname);
 		os_free(http_hostname);
 		http_hostname = NULL;
 	}
 	if(http_path != NULL)
 	{
-		PRINTF("before free/point of http_path:%p\n", http_path);
 		os_free(http_path);
 		http_path = NULL;
 	}
 	if(http_post_data != NULL)
 	{
-		PRINTF("before free/point of http_post_data:%p\n", http_post_data);
 		os_free(http_post_data);
 		http_post_data = NULL;
 	}
@@ -122,8 +119,6 @@ free_conn(void)
 		os_free(conn);
 		conn = NULL;
 	}
-
-	PRINTF("after free conn: available heap size:%d\n", system_get_free_heap_size());
 }
 
 static void  ICACHE_FLASH_ATTR
@@ -259,8 +254,7 @@ static void ICACHE_FLASH_ATTR sent_callback(void * arg)
 
 static void ICACHE_FLASH_ATTR connect_callback(void * arg)
 {
-	PRINTF("connected, available heap size:%d\n", system_get_free_heap_size());
-	PRINTF("Connected\n");
+	PRINTF("http server Connected\n");
 	struct espconn * conn = (struct espconn *)arg;
 
 	espconn_regist_recvcb(conn, receive_callback);
@@ -328,11 +322,6 @@ static void ICACHE_FLASH_ATTR reconnect_callback(void *arg, sint8 err)
 
 static void ICACHE_FLASH_ATTR dns_callback(const char * hostname, ip_addr_t * addr, void * arg)
 {
-	PRINTF("after dns: available heap size:%d\n", system_get_free_heap_size());
-	PRINTF("after dns/point of http_hostname:%p\n", http_hostname);
-	PRINTF("after dns/point of http_path:%p\n", http_path);
-	PRINTF("after dns/point of http_port:%p\n", http_port);
-	PRINTF("after dns/point of http_post_data:%p\n", http_post_data);
 	//request_args * req = (request_args *)arg;
 
 	if (addr == NULL)
@@ -355,7 +344,6 @@ static void ICACHE_FLASH_ATTR dns_callback(const char * hostname, ip_addr_t * ad
 		espconn_regist_disconcb(conn, disconnect_callback);
 		espconn_regist_reconcb(conn, reconnect_callback);
 		PRINTF("start connect http server\n");
-		PRINTF("before connect, available heap size:%d\n", system_get_free_heap_size());
 		// TODO: consider using espconn_regist_reconcb (for timeouts?)
 		// cf esp8266_sdk_v0.9.1/examples/at/user/at_ipCmd.c  (TCP ARQ retransmission?)
 		espconn_secure_connect(conn);
@@ -373,7 +361,6 @@ void ICACHE_FLASH_ATTR http_raw_request(const char * hostname, int port, const c
 	http_flag = 1;
 
 	PRINTF("DNS request\n");
-	PRINTF("before dns: available heap size:%d\n", system_get_free_heap_size());
 	os_timer_disarm(&timeout_timer);
 	os_timer_setfn(&timeout_timer, (os_timer_func_t *)http_exit, HTTP_TIMEOUT);
 	os_timer_arm(&timeout_timer, 20000, 0);
@@ -387,12 +374,7 @@ void ICACHE_FLASH_ATTR http_raw_request(const char * hostname, int port, const c
 	http_buf->buffer = (char *)os_malloc(1);
 	http_buf->buffer[0] = '\0'; // Empty string.
 	http_buf->buffer_size = 1;
-	PRINTF("after mallloc/point of http_hostname:%p\n", http_hostname);
-	PRINTF("after malloc/point of http_path:%p\n", http_path);
-	PRINTF("after malloc/point of http_port:%p\n", http_port);
-	PRINTF("after malloc/point of http_post_data:%p\n", http_post_data);
 	user_cb= user_callback;
-	PRINTF("after malloc: available heap size:%d\n", system_get_free_heap_size());
 	ip_addr_t addr;
 	err_t error = espconn_gethostbyname(NULL, // It seems we don't need a real espconn pointer here.
 										hostname, &addr, dns_callback);
