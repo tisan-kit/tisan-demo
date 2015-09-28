@@ -1,6 +1,8 @@
 #ifndef __PWM_H__
 #define __PWM_H__
 
+#include "../peri_rgb_light.h"
+
 #define PWM_CHANNEL_MAX 5
 
 struct pwm_single_param {
@@ -36,7 +38,8 @@ struct pwm_param {
 #define PERI_0_OUT_IO_FUNC  FUNC_GPIO12
 
 
-void pwm_init(uint16 freq, uint8 *duty, uint8 io_num, uint8 *io_id);
+//void pwm_init(struct LIGHT_PARAM light_param,struct LIGHT_INIT light_init);
+
 void pwm_start(void);
 
 void pwm_set_duty(uint8 duty, uint8 channel);

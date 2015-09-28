@@ -16,7 +16,7 @@
 
 #pragma pack(1)
 
-void peri_jdq_init(void);
+void peri_jdq_init(uint8 gpio_id);
 void peri_jdq_set_onoff(void);
 
 #endif

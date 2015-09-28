@@ -126,7 +126,7 @@ peri_rgb_light_init(struct LIGHT_PARAM light_param,struct LIGHT_INIT light_init)
     spi_flash_write((PRIV_PARAM_START_SEC + PRIV_PARAM_SAVE) * SPI_FLASH_SEC_SIZE,
     	    (uint32 *)&light_param, sizeof(struct LIGHT_PARAM));
             
-    pwm_init(light_param.pwm_freq, light_param.pwm_duty,light_init.io_num,light_init.io_id);
+    pwm_init(light_param,light_init);
     pwm_start();
     
 }

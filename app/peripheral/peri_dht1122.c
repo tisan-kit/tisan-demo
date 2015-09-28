@@ -195,18 +195,19 @@ peri_dht_read(DHT_Sensor_Data *output)
 void ICACHE_FLASH_ATTR
 peri_dht_init(DHT_Sensor* sensor)
 {
+	uint8 pin;
 	PRINTF("sensor type:%d", sensor->type);
 	PRINTF("sensor pin:%d", sensor->pin);
 	dht_sensor.pin = sensor->pin;
+	pin = dht_sensor.pin;
 	dht_sensor.type = DHT11;
 	//set gpio2 as gpio pin
-	PIN_FUNC_SELECT(DHT_DATA_IO_MUX, DHT_DATA_IO_FUNC);
-	    //disable pulldown
-	PIN_PULLDWN_DIS(DHT_DATA_IO_MUX);
-	    //enable pull up R
-	PIN_PULLUP_EN(DHT_DATA_IO_MUX);
-	    // Configure the GPIO with internal pull-up
-	    // PIN_PULLUP_EN( gpio );
-	GPIO_DIS_OUTPUT(dht_sensor.pin);
+	PIN_FUNC_SELECT(tisan_get_gpio_name(pin), tisan_get_gpio_general_func(pin));
+	//disable pulldown
+	PIN_PULLDWN_DIS(tisan_get_gpio_name(pin));
+	//enable pull up R
+	PIN_PULLUP_EN(tisan_get_gpio_name(pin));
+    // Configure the GPIO with internal pull-up
+	GPIO_DIS_OUTPUT(pin);
 	PRINTF("DHT: Setup for type %s connected to GPIO%d\n", dht_sensor.type==DHT11?"DHT11":"DHT22", dht_sensor.pin);
 }
