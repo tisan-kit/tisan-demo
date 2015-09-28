@@ -9,47 +9,30 @@
  *     Modification:    
  *********************************************************/
  
-#ifndef ___USER_TRI_COLOR_LIGHT_H__
-#define __USER_TRI_COLOR_LIGHT_H__
+#ifndef ___PERI_RGB_LIGHT_H__
+#define ___PERI_RGB_LIGHT_H__
 
 #include "c_types.h"
+#include "driver/pwm.h"
 
 #pragma pack(1)
 
 struct LIGHT_PARAM 
 {
-    uint16 pwm_freq; //100hz typically
-    uint8  pwm_duty[4]; // the sequence is red, green, blue.
-    uint8  pad[2]; // the save data must aligned.
+    uint16 pwm_freq;            //100hz typically
+    uint8  pwm_duty[5];         // the sequence is red, green, blue.
+    uint8  pad[2];              // the save data must aligned.
+};
+struct LIGHT_INIT
+{
+	uint8 io_num;               //pwm io number
+	uint8 io_id[5];	            //list pwm io id
 };
 
-/******************************************************************************
- * FunctionName : tri-colored light initialize.
- * Description  : initialize tri-colored light .
- * Parameters   : none 
- * Returns      : none
-*******************************************************************************/
 
-void peri_rgb_light_init(void);
-
-/******************************************************************************
- * FunctionName : user_tri_color_light_param_get.
- * Description  : get the parameter of the tri-colored light.
- * Parameters   : none 
- * Returns      : the parameter of the tri-colored light.
-*******************************************************************************/
-
+void peri_rgb_light_init(struct LIGHT_PARAM light_param,struct LIGHT_INIT light_init);
 struct LIGHT_PARAM peri_rgb_light_param_get(void);
-
- 
-/******************************************************************************
- * FunctionName : user_tri_color_light_param_set.
- * Description  : set the parameter of the tri-colored light.
- * Parameters   : light_param-- the parameter set.                  
- * Returns      : the save result
-*******************************************************************************/
-
-void peri_rgb_light_param_set(struct LIGHT_PARAM light_param);
-void peri_rgb_light_param_timer_set(void* arg);
+void peri_rgb_light_param_set( struct LIGHT_PARAM light_param);
+void peri_rgb_light_param_timer_set(void);
 
 #endif

@@ -52,12 +52,11 @@ peri_key_long_press(void)
  * Returns      : none
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
-peri_single_key_init(uint32 gpio_name,key_function long_press, key_function short_press)
+peri_single_key_init(uint8 gpio_id,key_function long_press, key_function short_press)
 {
     struct key_param *single_key = (struct key_param *)os_zalloc(sizeof(struct key_param));
-    uint8 gpio_id=get_gpio_id(gpio_name);
-    uint8 gpio_func=get_gpio_func(gpio_name);
-    single_key->gpio_name = gpio_name;
+    uint32 gpio_name=tisan_get_gpio_name(gpio_id);
+    uint8 gpio_func=tisan_get_gpio_general_func(gpio_id);
     single_key->gpio_id = gpio_id;
     single_key->key_level = 1;
     single_key->long_press = long_press;

@@ -19,8 +19,8 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef __DHT11_22_H__
-#define __DHT11_22_H__
+#ifndef __PERI_DHT11_22_H__
+#define __PERI_DHT11_22_H__
 
 #include "ets_sys.h"
 #include "osapi.h"
@@ -44,14 +44,14 @@ typedef struct {
 #define DHT_BREAKTIME	20
 #define DHT_MAXCOUNT	32000
 
-#define DHT_DATA_IO_MUX     PERIPHS_IO_MUX_MTCK_U
-#define DHT_DATA_IO_NUM		13
-#define DHT_DATA_IO_FUNC	FUNC_GPIO13
+#define DHT_DATA_IO_MUX     PERIPHS_IO_MUX_MTDI_U
+#define DHT_DATA_IO_NUM		12
+#define DHT_DATA_IO_FUNC	FUNC_GPIO12
 
 //#define DHT_DEBUG		true
 
-void dht_init(DHT_Sensor* sensor);
-bool dht_read(DHT_Sensor_Data* output);
+void peri_dht_init(DHT_Sensor* sensor);
+bool peri_dht_read(DHT_Sensor_Data* output);
 char* DHTFloat2String(char* buffer, float value);
 
 #endif

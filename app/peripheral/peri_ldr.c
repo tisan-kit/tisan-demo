@@ -1,0 +1,42 @@
+/*******************************************************
+ * File name: user_tri_color_light.c
+ * Author:
+ * Versions:1.0
+ * Description:This module is driver of the subdevice: tri-colored light.
+ * History:
+ *   1.Date:
+ *     Author:
+ *     Modification:    
+ *********************************************************/
+
+#include "peri_ldr.h"
+
+#include "user_interface.h"
+#include "driver/adc.h"
+#include "c_types.h"
+#include "gpio.h"
+/******************************************************************************
+ * FunctionName : peri_lsr_read
+ * Description  : read lsr value
+ * Parameters   : none
+ * Returns      : none
+*******************************************************************************/
+uint16 ICACHE_FLASH_ATTR
+peri_lsr_read(void)
+{
+   return adc_read();
+}
+/******************************************************************************
+ * FunctionName : peri_lsr_timer_read
+ * Description  : peri_lsr_timer_read
+ * Parameters   : none
+ * Returns      : none
+*******************************************************************************/
+void ICACHE_FLASH_ATTR
+peri_lsr_timer_read(void)
+{
+	uint16 value;
+	value = peri_lsr_read();
+	PRINTF("lsr_value=%d\n",value);
+}
+

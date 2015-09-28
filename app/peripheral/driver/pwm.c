@@ -11,10 +11,14 @@
 #include "ets_sys.h"
 #include "os_type.h"
 #include "osapi.h"
+#include "../peri_rgb_light.h"
 
 #include "user_interface.h"
 #include "pwm.h"
 
+
+struct LIGHT_PARAM light_param0;
+struct LIGHT_INIT light_init0;
 LOCAL struct pwm_param pwm;
 
 LOCAL bool rdy_flg = 0;		//calc finished flag
@@ -22,18 +26,15 @@ LOCAL bool update_flg = 0;	//update finished flag
 LOCAL bool init_flg = 0;		//first update flag
 
 //define local struct array
-LOCAL struct pwm_single_param local_single[PWM_CHANNEL + 1];	//local_single param
+LOCAL struct pwm_single_param local_single[PWM_CHANNEL_MAX];	//local_single param
 LOCAL uint8 local_channel = 0;								//local_channel value
 
-LOCAL struct pwm_single_param pwm_single[PWM_CHANNEL + 1];		//pwm_single param
+LOCAL struct pwm_single_param pwm_single[PWM_CHANNEL_MAX];		//pwm_single param
 LOCAL uint8 pwm_channel = 0;									//pwm_channel value
 
-LOCAL struct pwm_single_param saved_single[PWM_CHANNEL + 1];	//saved_single param
+LOCAL struct pwm_single_param saved_single[PWM_CHANNEL_MAX];	//saved_single param
 LOCAL uint8 saved_channel = 0;								//saved_channel value
 
-LOCAL uint8 pwm_out_io_num[PWM_CHANNEL] = {PWM_0_OUT_IO_NUM,
-                                           PWM_1_OUT_IO_NUM, PWM_2_OUT_IO_NUM
-                                          };	//each channel gpio number
 LOCAL uint8 pwm_current_channel = 0;							//current pwm channel in pwm_tim1_intr_handler
 LOCAL uint16 pwm_gpio = 0;									//all pwm gpio bits
 
@@ -88,7 +89,7 @@ pwm_insert_sort(struct pwm_single_param pwm[], uint8 n)
 }
 
 void ICACHE_FLASH_ATTR
-pwm_start(void)
+pwm_start()
 {
     uint8 i, j;
 
@@ -104,23 +105,23 @@ pwm_start(void)
     rdy_flg = 0;	 //clear rdy_flg before calcing local struct param
 
     // step 1: init PWM_CHANNEL+1 channels param
-    for (i = 0; i < PWM_CHANNEL; i++) {
+    for (i = 0; i < light_init0.io_num; i++) {
         uint32 us = pwm.period * pwm.duty[i] / PWM_DEPTH;		//calc  single channel us time
         local_single[i].h_time = US_TO_RTC_TIMER_TICKS(us);	//calc h_time to write FRC1_LOAD_ADDRESS
         local_single[i].gpio_set = 0;							//don't set gpio
-        local_single[i].gpio_clear = 1 << pwm_out_io_num[i];	//clear single channel gpio
+        local_single[i].gpio_clear = 1 << (light_init0.io_id[i]);	//clear single channel gpio
     }
 
-    local_single[PWM_CHANNEL].h_time = US_TO_RTC_TIMER_TICKS(pwm.period);		//calc pwm.period channel us time
-    local_single[PWM_CHANNEL].gpio_set = pwm_gpio;			//set all channels' gpio
-    local_single[PWM_CHANNEL].gpio_clear = 0;					//don't clear gpio
+    local_single[light_init0.io_num].h_time = US_TO_RTC_TIMER_TICKS(pwm.period);		//calc pwm.period channel us time
+    local_single[light_init0.io_num].gpio_set = pwm_gpio;			//set all channels' gpio
+    local_single[light_init0.io_num].gpio_clear = 0;					//don't clear gpio
 
     // step 2: sort, small to big
-    pwm_insert_sort(local_single, PWM_CHANNEL + 1);			//time sort small to big,
-    local_channel = PWM_CHANNEL + 1;							//local channel number is PWM_CHANNEL+1
+    pwm_insert_sort(local_single, light_init0.io_num + 1);			//time sort small to big,
+    local_channel = light_init0.io_num + 1;							//local channel number is PWM_CHANNEL+1
 
     // step 3: combine same duty channels
-    for (i = PWM_CHANNEL; i > 0; i--) {
+    for (i = light_init0.io_num; i > 0; i--) {
         if (local_single[i].h_time == local_single[i - 1].h_time) {
             local_single[i - 1].gpio_set |= local_single[i].gpio_set;
             local_single[i - 1].gpio_clear |= local_single[i].gpio_clear;
@@ -226,7 +227,7 @@ pwm_set_freq_duty(uint16 freq, uint8 *duty)
 
     pwm_set_freq(freq);
 
-    for (i = 0; i < PWM_CHANNEL; i++) {
+    for (i = 0; i < (light_init0.io_num); i++) {
         pwm_set_duty(duty[i], i);
     }
 }
@@ -318,9 +319,33 @@ void pwm_tim1_intr_handler(void)
 * Returns      : NONE
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
-pwm_init(uint16 freq, uint8 *duty)
+pwm_init(struct LIGHT_PARAM light_param,struct LIGHT_INIT light_init)
 {
-    uint8 i;
+    uint8 i,j;
+    uint8 gpio_num;
+    uint8 gpio_id[PWM_CHANNEL_MAX];
+    uint16 freq;
+    uint8 duty[PWM_CHANNEL_MAX];
+
+    light_init0.io_num = light_init.io_num;
+    gpio_num = light_init.io_num;
+    for(i=0;i<light_init.io_num;i++)
+    {
+    	light_init0.io_id[i]=light_init.io_id[i];
+    	gpio_id[i]=light_init.io_id[i];
+    }
+
+    light_param0.pwm_freq=light_param.pwm_freq;
+    freq = light_param.pwm_freq;
+    for(i=0;i<light_init.io_num;i++)
+      {
+      	light_param0.pwm_duty[i] = light_param.pwm_duty[i];
+      	duty[i] = light_param.pwm_duty[i];
+      }
+
+    uint32 io_name[gpio_num];
+
+    uint8 io_func;
 
     RTC_REG_WRITE(FRC1_CTRL_ADDRESS,
                   DIVDED_BY_16
@@ -328,12 +353,17 @@ pwm_init(uint16 freq, uint8 *duty)
                   | TM_EDGE_INT);
     //RTC_REG_WRITE(FRC1_LOAD_ADDRESS, 0);
 
-    PIN_FUNC_SELECT(PWM_0_OUT_IO_MUX, PWM_0_OUT_IO_FUNC);
-    PIN_FUNC_SELECT(PWM_1_OUT_IO_MUX, PWM_1_OUT_IO_FUNC);
-    PIN_FUNC_SELECT(PWM_2_OUT_IO_MUX, PWM_2_OUT_IO_FUNC);
+    for(j=0;j<gpio_num;j++)
+    {
+    	PIN_FUNC_SELECT(tisan_get_gpio_name(gpio_id[j]), tisan_get_gpio_general_func(gpio_id[j]));
+    	io_name[j] = tisan_get_gpio_name(gpio_id[j]);
 
-    for (i = 0; i < PWM_CHANNEL; i++) {
-        pwm_gpio |= (1 << pwm_out_io_num[i]);
+    }
+    PRINTF("IO1_ID: %d, IO2_ID: %d, IO3_ID: %d", gpio_id[0], gpio_id[1], gpio_id[2]);
+    PRINTF("IO1_NAME: %x, IO2_NAME: %x, IO3_NAME: %x", io_name[0], io_name[1], io_name[2]);
+
+    for (i = 0; i < gpio_num; i++) {
+        pwm_gpio |= (1 << gpio_id[i]);
     }
 
     pwm_set_freq_duty(freq, duty);

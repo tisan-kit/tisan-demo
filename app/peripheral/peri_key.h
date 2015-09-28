@@ -23,7 +23,6 @@ typedef void (* key_function)(void);
 
 struct key_param {
     uint8 key_level;
-    uint32 gpio_name;
     uint8  gpio_id;
     os_timer_t key_5s;
     os_timer_t key_50ms;
@@ -38,7 +37,7 @@ struct keys_param {
 
 void peri_key_short_press(void);
 void peri_key_long_press(void);
-void peri_single_key_init(uint32 gpio_name,key_function long_press, key_function short_press);
+void peri_single_key_init(uint8 gpio_id,key_function long_press, key_function short_press);
 
 
 #endif /* APP_INCLUDE_USER_USER_KEY_H_ */

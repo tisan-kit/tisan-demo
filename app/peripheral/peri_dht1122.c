@@ -32,9 +32,9 @@ static DHT_Sensor dht_sensor;
 #define sleepms(x) os_delay_us(x*1000);
 /******************************************************************************
  * FunctionName : scale_humidity
- * Description  : key's short press function, needed to be installed
- * Parameters   : none
- * Returns      : none
+ * Description  : get humidity value
+ * Parameters   : DHTType sensor_type, int *data
+ * Returns      : humidity
 *******************************************************************************/
 static inline
 float scale_humidity(DHTType sensor_type, int *data)
@@ -50,10 +50,10 @@ float scale_humidity(DHTType sensor_type, int *data)
 	}
 }
 /******************************************************************************
- * FunctionName : peri_key_short_press
- * Description  : key's short press function, needed to be installed
- * Parameters   : none
- * Returns      : none
+ * FunctionName : scale_temperature
+ * Description  : get scale_temperature value
+ * Parameters   : DHTType sensor_type, int *data
+ * Returns      : temperature
 *******************************************************************************/
 static inline
 float scale_temperature(DHTType sensor_type, int *data)
@@ -74,10 +74,10 @@ float scale_temperature(DHTType sensor_type, int *data)
 	}
 }
 /******************************************************************************
- * FunctionName : peri_key_short_press
- * Description  : key's short press function, needed to be installed
- * Parameters   : none
- * Returns      : none
+ * FunctionName : DHTFloat2String
+ * Description  : turn float to string
+ * Parameters   : char* buffer, float value
+ * Returns      : string buffer
 *******************************************************************************/
 char* ICACHE_FLASH_ATTR
 DHTFloat2String(char* buffer, float value)
@@ -86,13 +86,13 @@ DHTFloat2String(char* buffer, float value)
   return buffer;
 }
 /******************************************************************************
- * FunctionName : peri_key_short_press
- * Description  : key's short press function, needed to be installed
- * Parameters   : none
- * Returns      : none
+ * FunctionName : peri_dht_read
+ * Description  : read dhtxx device
+ * Parameters   : DHT_Sensor_Data *output
+ * Returns      : true/false
 *******************************************************************************/
 bool ICACHE_FLASH_ATTR
-dht_read(DHT_Sensor_Data *output)
+peri_dht_read(DHT_Sensor_Data *output)
 {
 	int counter = 0;
 	int laststate = 1;
@@ -187,26 +187,27 @@ dht_read(DHT_Sensor_Data *output)
 }
 
 /******************************************************************************
- * FunctionName : peri_key_short_press
- * Description  : key's short press function, needed to be installed
- * Parameters   : none
+ * FunctionName : peri_dht_init
+ * Description  : dhtxx device initialize
+ * Parameters   : DHT_Sensor
  * Returns      : none
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
-dht_init(DHT_Sensor* sensor)
+peri_dht_init(DHT_Sensor* sensor)
 {
+	uint8 pin;
 	PRINTF("sensor type:%d", sensor->type);
 	PRINTF("sensor pin:%d", sensor->pin);
 	dht_sensor.pin = sensor->pin;
+	pin = dht_sensor.pin;
 	dht_sensor.type = DHT11;
 	//set gpio2 as gpio pin
-	PIN_FUNC_SELECT(DHT_DATA_IO_MUX, DHT_DATA_IO_FUNC);
-	    //disable pulldown
-	PIN_PULLDWN_DIS(DHT_DATA_IO_MUX);
-	    //enable pull up R
-	PIN_PULLUP_EN(DHT_DATA_IO_MUX);
-	    // Configure the GPIO with internal pull-up
-	    // PIN_PULLUP_EN( gpio );
-	GPIO_DIS_OUTPUT(dht_sensor.pin);
+	PIN_FUNC_SELECT(tisan_get_gpio_name(pin), tisan_get_gpio_general_func(pin));
+	//disable pulldown
+	PIN_PULLDWN_DIS(tisan_get_gpio_name(pin));
+	//enable pull up R
+	PIN_PULLUP_EN(tisan_get_gpio_name(pin));
+    // Configure the GPIO with internal pull-up
+	GPIO_DIS_OUTPUT(pin);
 	PRINTF("DHT: Setup for type %s connected to GPIO%d\n", dht_sensor.type==DHT11?"DHT11":"DHT22", dht_sensor.pin);
 }
