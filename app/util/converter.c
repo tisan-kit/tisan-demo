@@ -36,7 +36,7 @@ char2bin(char a)
 
 /******************************************************************************
  * FunctionName : hex2bin.
- * Description  : convert. string to bin.
+ * Description  : convert string to bin.
  * Parameters   : dst --
  * 				  hex_str --
  * Returns      : none.
@@ -50,26 +50,6 @@ hex2bin(uint8 * dst, char * hex_str)
     {
         dst[i++] = ((char2bin(*p)) << 4) | (char2bin(*(p+1)));
     }
-}
-
-unsigned short ICACHE_FLASH_ATTR
-crc16(const unsigned char *buf, unsigned long count)
-{
-        unsigned short crc = 0;
-        int i;
-
-        while(count--) {
-                crc = crc ^ *buf++ << 8;
-
-                for (i=0; i<8; i++) {
-                        if (crc & 0x8000) {
-                                crc = crc << 1 ^ 0x1021;
-                        } else {
-                                crc = crc << 1;
-                        }
-                }
-        }
-        return crc;
 }
 
 const char* ICACHE_FLASH_ATTR
