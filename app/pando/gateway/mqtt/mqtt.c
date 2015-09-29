@@ -500,7 +500,6 @@ MQTT_exit(MQTT_Client *client)
 void ICACHE_FLASH_ATTR
 MQTT_Task(os_event_t *e)
 {
-	INFO("MQTT TASK\n");
 	MQTT_Client* client = (MQTT_Client*)e->par;
 	uint8_t dataBuffer[MQTT_BUF_SIZE];
 	uint16_t dataLen;
@@ -516,7 +515,6 @@ MQTT_Task(os_event_t *e)
 		client->connState = TCP_CONNECTING;
 		break;
 	case MQTT_DATA:
-		INFO("MQTT TASK DATA\n");
 		if(QUEUE_IsEmpty(&client->msgQueue) || client->sendTimeout != 0) {
 			break;
 		}
