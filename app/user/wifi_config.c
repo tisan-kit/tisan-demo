@@ -12,6 +12,7 @@
 #include "user_interface.h"
 #include "smartconfig.h"
 #include "wifi_config.h"
+#include "../peripheral/peri_led.h"
 
 static wifi_config_callback wifi_config_cb = NULL;
 static bool s_config_start_flag = 0;
@@ -58,6 +59,7 @@ smartconfig_done(sc_status status, void *pdata)
 
 		case SC_STATUS_LINK:
 		os_printf("SC_STATUS_LINK\n");
+	    peri_led_set(0); // led indicate the device has got ssid and password.
 		struct station_config *sta_conf = pdata;
 		wifi_station_set_config(sta_conf);
 		wifi_station_disconnect();
@@ -72,6 +74,7 @@ smartconfig_done(sc_status status, void *pdata)
 	    	os_memcpy(phone_ip, (uint8*)pdata, 4);
 	    	os_printf("Phone ip: %d.%d.%d.%d\n",phone_ip[0],phone_ip[1],phone_ip[2],phone_ip[3]);
 		}
+	    peri_led_set(1); // led indicate the wifi config over.
 		smartconfig_stop();
 		s_config_start_flag = 0;
 		if(wifi_config_cb != NULL)
@@ -95,6 +98,7 @@ void ICACHE_FLASH_ATTR
 wifi_config(wifi_config_callback config_cb)
 {
 	PRINTF("wifi config start...\n");
+	peri_led_blink(BLINK_QUICK);
 	wifi_config_cb = config_cb;
     if(s_config_start_flag)
     {
