@@ -36,7 +36,10 @@ void user_init(void)
 	uart_init(115200, 115200); // serial bound rate:11520.
 
 	//long press gpio4, enter into wifi config mode.
-	peri_single_key_init(PERIPHS_IO_MUX_GPIO4_U, user_key_long_press_cb, NULL);
+	peri_single_key_init(4, user_key_long_press_cb, NULL);
+
+	// gpio5 drive the led, which indicate the wifi config mode.
+	peri_led_init(5);
 
 	led_object_init();
 
