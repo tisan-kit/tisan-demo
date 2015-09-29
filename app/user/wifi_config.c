@@ -59,7 +59,7 @@ smartconfig_done(sc_status status, void *pdata)
 
 		case SC_STATUS_LINK:
 		os_printf("SC_STATUS_LINK\n");
-	    peri_led_set(0); // led indicate the device has got ssid and password.
+		peri_led_set(0); // led indicate the device has got ssid and password.
 		struct station_config *sta_conf = pdata;
 		wifi_station_set_config(sta_conf);
 		wifi_station_disconnect();
