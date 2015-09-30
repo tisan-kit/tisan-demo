@@ -13,17 +13,15 @@
  *     Modification:    
  *********************************************************/
 
-#ifndef __USER_IAQ5000_H__
-#define __USER_IAQ5000_H__
+#ifndef __PERI_IAQ_H__
+#define __PERI_IAQ_H__
 
-struct IAQ5000_PARAM
-{
-	uint16 iaq;
-};
+#include "ets_sys.h"
 
-void user_iaq5000_init(void);
-uint16 user_iaq5000_read_th(void);
-uint8* user_iaq5000_get_poweron_th(void);
+
+void peri_iaq_init(void);
+uint16 peri_iaq_read(void);
+uint8* peri_iaq_get(void);
 
 
 #endif

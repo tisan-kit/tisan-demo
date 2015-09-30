@@ -16,14 +16,9 @@
 #include "c_types.h"
 #include "spi_flash.h"
 
-
-
-#define PRIV_PARAM_START_SEC		0x7C
-#define PRIV_PARAM_SAVE     0
-
-extern struct LIGHT_PARAM light_r_param;
-extern struct LIGHT_PARAM light_g_param;
-extern struct LIGHT_PARAM light_b_param;
+struct LIGHT_PARAM light_r_param={25000,255,0,255};
+struct LIGHT_PARAM light_g_param={25000,0,255,255};
+struct LIGHT_PARAM light_b_param={25000,255,255,0};
 
 /******************************************************************************
  * FunctionName : peri_rgb_light_param_get.
@@ -47,7 +42,7 @@ peri_rgb_light_param_get(void)
  * FunctionName : peri_rgb_light_param_set.
  * Description  : set the parameter of the RGB light.
  * Parameters   : light_param-- RGB light parameter.
- * Returns      : the save result
+ * Returns      : none
 *******************************************************************************/
 
 void ICACHE_FLASH_ATTR 
@@ -67,9 +62,9 @@ peri_rgb_light_param_set( struct LIGHT_PARAM light_param)
 
 /******************************************************************************
  * FunctionName : peri_rgb_light_param_timer_set.
- * Description  : set the parameter of the RGB light.
- * Parameters   : light_param-- RGB light parameter.
- * Returns      : the save result
+ * Description  : set the parameter of the RGB light by timer.
+ * Parameters   : none.
+ * Returns      : none.
 *******************************************************************************/
 
 void ICACHE_FLASH_ATTR
@@ -98,30 +93,20 @@ peri_rgb_light_param_timer_set(void)
 	}
 
 
-	//struct LIGHT_PARAM light_param = *((struct LIGHT_PARAM*)arg);
-
 }
 /******************************************************************************
  * FunctionName : peri_rgb_light_init
  * Description  : light demo initialize, mainly initialize pwm mode
- * Parameters   : none
+ * Parameters   : struct LIGHT_PARAM light_param,struct LIGHT_INIT light_init
  * Returns      : none
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
 peri_rgb_light_init(struct LIGHT_PARAM light_param,struct LIGHT_INIT light_init)
 {
-    //struct LIGHT_PARAM light_param;
     
     PRINTF("I am the tri-colored light\n");
     PRINTF("pwm_freq: %d, pwm_duty_red: %d, pwm_duty_green: %d, pwm_duty_blue: %d\n", light_param.pwm_freq,
         (light_param.pwm_duty)[0], (light_param.pwm_duty)[1], (light_param.pwm_duty)[2]);
-   // light_param.pwm_freq = 25000;
-
-   // int i;
-   // for(i = 0; i<3; i++ )
-   // {
-   // 	light_param.pwm_duty[i] = 0;
-   // }
 
     spi_flash_write((PRIV_PARAM_START_SEC + PRIV_PARAM_SAVE) * SPI_FLASH_SEC_SIZE,
     	    (uint32 *)&light_param, sizeof(struct LIGHT_PARAM));

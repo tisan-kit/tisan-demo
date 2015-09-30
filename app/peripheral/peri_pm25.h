@@ -13,8 +13,8 @@
  *     Modification:    
  *********************************************************/
 
-#ifndef __USER_PM25_H__
-#define __USER_PM25_H__
+#ifndef __PERI_PM25_H__
+#define __PERI_PM25_H__
 
 #define PM_SENT_START1 0x32
 #define PM_SENT_START2 0x3d
@@ -37,7 +37,7 @@ typedef struct
 }PM25_REV_DATA;
 
 void display_PMdevice_data(PM25_REV_DATA *data_buffer);
-uint16 ICACHE_FLASH_ATTR pm_device_check(void);
+uint16 peri_pm_25_get(void);
 
 
 #endif

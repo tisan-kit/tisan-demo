@@ -1,5 +1,5 @@
 /*******************************************************
- * File name: user_key.c
+ * File name: peri_key.c
  * Author: Chongguang Li
  * Versions:1.0
  * Description:This is the key function module.

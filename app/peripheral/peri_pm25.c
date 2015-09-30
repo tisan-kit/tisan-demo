@@ -52,9 +52,15 @@ void display_PMdevice_data(PM25_REV_DATA *data_buffer)
  * Returns      : bool - ture or false
 ********************************************************************************/
 uint16 ICACHE_FLASH_ATTR
-pm_device_check(void)
+peri_pm_25_get(void)
 {
 	ETS_UART_INTR_ENABLE();
-	return 1;
+	 PRINTF("start\n");
+/*	 if (UART_RXFIFO_FULL_INT_ST != (READ_PERI_REG(UART_INT_ST(0)) & UART_RXFIFO_FULL_INT_ST))
+	    {
+	        while(1);
+	    }*/
+	  PRINTF("pm2.5:%x\n", PM25_data_buffer->pm2_5);
+	return (PM25_data_buffer->pm2_5);
 }
 
