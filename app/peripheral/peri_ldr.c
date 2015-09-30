@@ -1,8 +1,8 @@
 /*******************************************************
- * File name: user_tri_color_light.c
+ * File name: peri_ldr.c
  * Author:
  * Versions:1.0
- * Description:This module is driver of the subdevice: tri-colored light.
+ * Description:This module is driver of the subdevice: light dependent resistor.
  * History:
  *   1.Date:
  *     Author:
@@ -22,7 +22,7 @@
  * Returns      : none
 *******************************************************************************/
 uint16 ICACHE_FLASH_ATTR
-peri_lsr_read(void)
+peri_ldr_read(void)
 {
    return adc_read();
 }
@@ -33,7 +33,7 @@ peri_lsr_read(void)
  * Returns      : none
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
-peri_lsr_timer_read(void)
+peri_ldr_timer_read(void)
 {
 	uint16 value;
 	value = peri_lsr_read();

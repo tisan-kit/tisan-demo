@@ -1,8 +1,8 @@
 /*******************************************************
- * File name: user_plug.c
- * Author: Chongguang Li
+ * File name: peri_iaq5000.c
+ * Author: Shasha Liu
  * Versions:1.0
- * Description:This module is driver of the subdevice: plug.
+ * Description:This module is driver of the subdevice: Indoor air quality detect module.
                in this example:GPIO 15: the plug relay driver;
                                GPIO 12  a blinking led;
                                GPIO 0   the wifi connect state indicate;
@@ -13,6 +13,8 @@
  *     Modification:    
  *********************************************************/
  
+#include "peri_iaq.h"
+
 #include "ets_sys.h"
 #include "osapi.h"
 #include "os_type.h"
@@ -20,7 +22,6 @@
 #include "user_interface.h"
 #include "driver/key.h"
 #include "driver/i2c.h"
-#include "peri_iaq5000.h"
  
 /* NOTICE---this is for i2c communication.
  * 0x84 is the i2c slave device address for 7 bit. */
@@ -28,10 +29,6 @@
 #define IAQ5000_ADD_W     0x84
 #define IAQ5000_ADD_R     0x85
 
-
-uint8 air_quality_data[4];
-//LOCAL os_timer_t link_led_timer;
-//LOCAL uint8 link_led_level = 0;
 /******************************************************************************
  * FunctionName : user_mvh3004_burst_read
  * Description  : burst read mvh3004's internal data
@@ -41,7 +38,7 @@ uint8 air_quality_data[4];
  * Returns      : bool - true or false
 *******************************************************************************/
 LOCAL bool ICACHE_FLASH_ATTR
-peri_iaq5000_burst_read(uint8 addr, uint8 *pData, uint16 len)
+peri_iaq_single_burst_read(uint8 addr, uint8 *pData, uint16 len)
 {
     uint8 ack;
     uint16 i;
@@ -101,10 +98,11 @@ peri_iaq5000_burst_read(uint8 addr, uint8 *pData, uint16 len)
  * Returns      : bool - ture or false
 *******************************************************************************/
 uint16 ICACHE_FLASH_ATTR
-peri_iaq5000_read_th(void)
+peri_iaq_read(void)
 {
 	uint8 data[4];
-    user_iaq5000_burst_read(IAQ5000_ADD,data, 4);
+	uint16 iaq_value;
+	peri_iaq_single_burst_read(IAQ5000_ADD,data, 4);
 
     if((data[0]!=0xA5)||(data[3]!=0x3C))
     {
@@ -113,8 +111,10 @@ peri_iaq5000_read_th(void)
     }
     else
     {
+    	iaq_value = data[1]*256+data[2];
+    	os_printf("iaq5000 read data :%d \n",iaq_value);
+    	return iaq_value;
 
-    	return data[1]*256+data[2];
     }
 
 }
@@ -125,12 +125,7 @@ peri_iaq5000_read_th(void)
  * Returns      : none
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
-peri_iaq5000_init(void)
+peri_iaq_init(void)
 {
     i2c_init();
-}
-uint8 *ICACHE_FLASH_ATTR
-peri_iaq5000_get_poweron_th(void)
-{
-    return air_quality_data;
 }

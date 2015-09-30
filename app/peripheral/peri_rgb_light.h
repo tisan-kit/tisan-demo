@@ -17,11 +17,14 @@
 
 #pragma pack(1)
 
+#define PRIV_PARAM_START_SEC		0x7C
+#define PRIV_PARAM_SAVE     0
+
 struct LIGHT_PARAM 
 {
     uint16 pwm_freq;            //100hz typically
     uint8  pwm_duty[5];         // the sequence is red, green, blue.
-    uint8  pad[2];              // the save data must aligned.
+    uint8  pad[1];              // the save data must aligned.
 };
 struct LIGHT_INIT
 {
