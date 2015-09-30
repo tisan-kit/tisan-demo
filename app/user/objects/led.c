@@ -24,7 +24,16 @@ struct led {
 void ICACHE_FLASH_ATTR
 led_init()
 {
-	peri_rgb_light_init();
+	struct LIGHT_PARAM led_param;
+	struct LIGHT_INIT led_io;
+	led_param.pwm_duty[0] = 128;
+	led_param.pwm_duty[1] = 128;
+	led_param.pwm_duty[2] = 128;
+	led_io.io_num = 3;
+	led_io.io_id[0] = 13;
+	led_io.io_id[1] = 14;
+	led_io.io_id[2] = 15;
+	peri_rgb_light_init(led_param, led_io);
 }
 
 void ICACHE_FLASH_ATTR
