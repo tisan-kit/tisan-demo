@@ -98,7 +98,11 @@ void ICACHE_FLASH_ATTR
 wifi_config(wifi_config_callback config_cb)
 {
 	PRINTF("wifi config start...\n");
+
+	// gpio5 drive the led, which indicate the wifi config mode.
+	peri_led_init(5);
 	peri_led_blink(BLINK_QUICK);
+
 	wifi_config_cb = config_cb;
     if(s_config_start_flag)
     {

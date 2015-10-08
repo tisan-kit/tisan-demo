@@ -137,9 +137,11 @@ pando_device_register(register_callback callback)
     str_device_key = pando_data_get(DATANAME_DEVICE_KEY);
 
     char str_device_serial[DEVICE_SERIAL_BUF_LEN];
-    uint32 device_serial = system_get_chip_id();
-    os_sprintf(str_device_serial, "%08x", device_serial);
-
+    char device_sta_mac[6];
+    wifi_get_macaddr(STATION_IF,device_sta_mac);
+    os_sprintf(str_device_serial, "%02x%02x%02x%02x%02x%02x", device_sta_mac[0], device_sta_mac[1], device_sta_mac[2], device_sta_mac[3] \
+    		, device_sta_mac[4], device_sta_mac[5]);
+    PRINTF("device_serial:%s\n", str_device_serial);
     // try register device via HTTP
     struct jsontree_string json_product_key = JSONTREE_STRING(PANDO_PRODUCT_KEY);
     struct jsontree_string json_device_code = JSONTREE_STRING(str_device_serial);
