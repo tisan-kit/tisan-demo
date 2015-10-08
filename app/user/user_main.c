@@ -38,9 +38,7 @@ void user_init(void)
 	//long press gpio4, enter into wifi config mode.
 	peri_single_key_init(4, user_key_long_press_cb, NULL);
 
-	// gpio5 drive the led, which indicate the wifi config mode.
-	peri_led_init(5);
-
+	// add you object init here.
 	led_object_init();
 
 	pando_framework_init();
