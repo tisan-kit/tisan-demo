@@ -43,7 +43,9 @@ typedef signed long long    sint64;
 typedef unsigned long long  uint64;
 typedef unsigned long long  u64;
 typedef float               real32;
+typedef float               float32;
 typedef double              real64;
+typedef double              double64;
 
 #define __le16      u16
 
