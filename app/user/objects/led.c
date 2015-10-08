@@ -24,16 +24,28 @@ struct led {
 void ICACHE_FLASH_ATTR
 led_init()
 {
-	peri_rgb_light_init();
+	struct LIGHT_PARAM light_param;
+	struct LIGHT_INIT light_init;
+	light_param.pwm_freq=25000;
+	light_param.pwm_duty[0]=255;
+	light_param.pwm_duty[1]=255;
+	light_param.pwm_duty[2]=255;
+
+	light_init.io_num=3;
+	light_init.io_id[0]=14;
+	light_init.io_id[1]=13;
+	light_init.io_id[2]=15;
+
+	peri_rgb_light_init(light_param,light_init);
 }
 
 void ICACHE_FLASH_ATTR
 led_set(struct led* value)
 {
 	struct LIGHT_PARAM light_value;
-	light_value.pwm_duty[0] = value->red;
-	light_value.pwm_duty[1] = value->green;
-	light_value.pwm_duty[2] = value->blue;
+	light_value.pwm_duty[0] = 255-value->red;
+	light_value.pwm_duty[1] = 255-value->green;
+	light_value.pwm_duty[2] = 255-value->blue;
 	peri_rgb_light_param_set(light_value);
 }
 
@@ -42,9 +54,9 @@ led_get(struct led* value)
 {
 	struct LIGHT_PARAM light_value;
 	light_value = peri_rgb_light_param_get();
-	value->red = light_value.pwm_duty[0];
-	value->green = light_value.pwm_duty[1];
-	value->blue = light_value.pwm_duty[2];
+	value->red = 255 -light_value.pwm_duty[0];
+	value->green =255 - light_value.pwm_duty[1];
+	value->blue = 255 -light_value.pwm_duty[2];
 }
 
 
