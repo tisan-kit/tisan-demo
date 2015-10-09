@@ -21,8 +21,8 @@
 
 #define MOTOR_FLASH_PRIV_SAVE     1
 
-struct LIGHT_PARAM motor_forward_param={25000,40,0};
-struct LIGHT_PARAM motor_backard_param={25000,0,40};
+struct PWM_APP_PARAM motor_forward_param={25000,40,0};
+struct PWM_APP_PARAM motor_backard_param={25000,0,40};
 
 /******************************************************************************
  * FunctionName : peri_motor_get.
@@ -31,13 +31,13 @@ struct LIGHT_PARAM motor_backard_param={25000,0,40};
  * Returns      : the parameter of the motor status.
 *******************************************************************************/
 
-struct LIGHT_PARAM ICACHE_FLASH_ATTR 
+struct PWM_APP_PARAM ICACHE_FLASH_ATTR
 peri_motor_get(void)
 {
-    struct LIGHT_PARAM ret;
+    struct PWM_APP_PARAM ret;
     
     spi_flash_read((PRIV_PARAM_START_SEC + MOTOR_FLASH_PRIV_SAVE) * SPI_FLASH_SEC_SIZE,
-    	(uint32 *)&ret, sizeof(struct LIGHT_PARAM));
+    	(uint32 *)&ret, sizeof(struct PWM_APP_PARAM));
     return ret;
 }
 
@@ -50,7 +50,7 @@ peri_motor_get(void)
 *******************************************************************************/
 
 void ICACHE_FLASH_ATTR 
-peri_motor_set( struct LIGHT_PARAM motor_param)
+peri_motor_set( struct PWM_APP_PARAM motor_param)
 {
     pwm_set_freq(motor_param.pwm_freq);
     pwm_set_duty(motor_param.pwm_duty[0], 0);
@@ -61,7 +61,7 @@ peri_motor_set( struct LIGHT_PARAM motor_param)
     
     spi_flash_erase_sector(PRIV_PARAM_START_SEC + MOTOR_FLASH_PRIV_SAVE);
 	spi_flash_write((PRIV_PARAM_START_SEC + MOTOR_FLASH_PRIV_SAVE) * SPI_FLASH_SEC_SIZE,
-	    (uint32 *)&motor_param, sizeof(struct LIGHT_PARAM));
+	    (uint32 *)&motor_param, sizeof(struct PWM_APP_PARAM));
 }
 
 /******************************************************************************
@@ -71,7 +71,7 @@ peri_motor_set( struct LIGHT_PARAM motor_param)
  * Returns      : none
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
-peri_motor_init(struct LIGHT_PARAM motor_param,struct LIGHT_INIT motor_init)
+peri_motor_init(struct PWM_APP_PARAM motor_param,struct PWM_INIT motor_init)
 {
     PRINTF("I am the electronic-motor\n");
     PRINTF("pwm_freq: %d, pwm_duty1: %d, pwm_duty2: %d\n",motor_param.pwm_freq,
@@ -79,7 +79,7 @@ peri_motor_init(struct LIGHT_PARAM motor_param,struct LIGHT_INIT motor_init)
     PRINTF("start flash write \n");
 
     spi_flash_write((PRIV_PARAM_START_SEC + MOTOR_FLASH_PRIV_SAVE) * SPI_FLASH_SEC_SIZE,
-    	    (uint32 *)&motor_param, sizeof(struct LIGHT_PARAM));
+    	    (uint32 *)&motor_param, sizeof(struct PWM_APP_PARAM));
 
     PRINTF("finished \n");
     pwm_init(motor_param,motor_init);

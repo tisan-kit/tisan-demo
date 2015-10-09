@@ -7,7 +7,7 @@
 #define TEMPERATURE_OBJECT_NO 1
 
 struct temperature {
-	float centigrade;
+	float32 centigrade;
 };
 void ICACHE_FLASH_ATTR
 temperature_init() {

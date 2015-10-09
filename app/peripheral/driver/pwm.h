@@ -5,6 +5,18 @@
 
 #define PWM_CHANNEL_MAX 5
 
+struct PWM_APP_PARAM
+{
+    uint16 pwm_freq;            //100hz typically
+    uint8  pwm_duty[PWM_CHANNEL_MAX];         // the sequence is red, green, blue.
+    uint8  pad[1];              // the save data must aligned.
+};
+struct PWM_INIT
+{
+	uint8 io_num;               //pwm io number
+	uint8 io_id[PWM_CHANNEL_MAX];	            //list pwm io id
+};
+
 struct pwm_single_param {
     uint16 gpio_set;
     uint16 gpio_clear;
