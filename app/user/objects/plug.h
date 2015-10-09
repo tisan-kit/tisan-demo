@@ -1,6 +1,6 @@
-#ifndef OBJECTS_switch_H_
-#define OBJECTS_switch_H_
+#ifndef OBJECTS_PLUG_H_
+#define OBJECTS_PLUG_H_
 
-void switch_object_init();
+void plug_object_init();
 
 #endif
