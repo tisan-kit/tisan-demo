@@ -1,6 +1,6 @@
-#ifndef OBJECTS_temperature_H_
-#define OBJECTS_temperature_H_
+#ifndef OBJECTS_HUMITURE_H_
+#define OBJECTS_HUMITURE_H_
 
-void temperature_object_init();
+void humiture_object_init();
 
 #endif
