@@ -19,9 +19,9 @@
 #pragma pack(1)
 
 
-void peri_motor_init(struct LIGHT_PARAM motor_param,struct LIGHT_INIT motor_init);
-struct LIGHT_PARAM peri_motor_get(void);
-void peri_motor_set( struct LIGHT_PARAM motor_param);
+void peri_motor_init(struct PWM_APP_PARAM motor_param,struct PWM_INIT motor_init);
+struct PWM_APP_PARAM peri_motor_get(void);
+void peri_motor_set( struct PWM_APP_PARAM motor_param);
 
 
 #endif

@@ -12,8 +12,8 @@ struct motor {
 void ICACHE_FLASH_ATTR
 motor_init() {
 	// TODO: add your object init code here.
-	struct LIGHT_PARAM motor_param;
-	struct LIGHT_INIT motor_init;
+	struct PWM_APP_PARAM motor_param;
+	struct PWM_INIT motor_init;
 	motor_param.pwm_freq=25000;
 	motor_param.pwm_duty[0]=0;
 	motor_param.pwm_duty[1]=0;
@@ -29,7 +29,7 @@ void ICACHE_FLASH_ATTR
 motor_set(struct motor* value) {
 	// TODO: implement object set function here.
 	// the set function read value and operate the hardware.
-	struct LIGHT_PARAM motor_param;
+	struct PWM_APP_PARAM motor_param;
 	motor_param.pwm_freq=25000;
 	if((value->speed)>=0)   //forward
 	{
@@ -51,7 +51,7 @@ void ICACHE_FLASH_ATTR
 motor_get(struct motor* value) {
 	// TODO: implement object get  function here
 	// get function retrieve hardware status and assign it to value.
-	struct LIGHT_PARAM motor_param;
+	struct PWM_APP_PARAM motor_param;
 	motor_param=peri_motor_get();
 	if(motor_param.pwm_duty[0]==0)
 	{
