@@ -227,7 +227,7 @@ READPACKET:
 			// statement due to the way protothreads resume.
 			if(msg_type == MQTT_MSG_TYPE_PUBLISH)
 			{
-			  INFO("uu2,receive length:%d, actual length:%d\n",client->mqtt_state.message_length, client->mqtt_state.message_length_read);
+			  INFO("PUBLISH MESSAGE,receive length:%d, actual length:%d\n",client->mqtt_state.message_length, client->mqtt_state.message_length_read);
 			  len = client->mqtt_state.message_length_read;
 
 			  if(client->mqtt_state.message_length < client->mqtt_state.message_length_read)
