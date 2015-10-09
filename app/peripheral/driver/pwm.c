@@ -17,8 +17,8 @@
 #include "pwm.h"
 
 
-struct LIGHT_PARAM light_param0;
-struct LIGHT_INIT light_init0;
+struct PWM_APP_PARAM light_param0;
+struct PWM_INIT light_init0;
 LOCAL struct pwm_param pwm;
 
 LOCAL bool rdy_flg = 0;		//calc finished flag
@@ -319,7 +319,7 @@ void pwm_tim1_intr_handler(void)
 * Returns      : NONE
 *******************************************************************************/
 void ICACHE_FLASH_ATTR
-pwm_init(struct LIGHT_PARAM light_param,struct LIGHT_INIT light_init)
+pwm_init(struct PWM_APP_PARAM light_param,struct PWM_INIT light_init)
 {
     uint8 i,j;
     uint8 gpio_num;
