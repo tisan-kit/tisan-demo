@@ -32,8 +32,8 @@ led_init()
 	light_param.pwm_duty[2]=255;
 
 	light_init.io_num=3;
-	light_init.io_id[0]=14;
-	light_init.io_id[1]=13;
+	light_init.io_id[0]=13;
+	light_init.io_id[1]=14;
 	light_init.io_id[2]=15;
 
 	peri_rgb_light_init(light_param,light_init);
@@ -43,10 +43,14 @@ void ICACHE_FLASH_ATTR
 led_set(struct led* value)
 {
 	struct PWM_APP_PARAM light_value;
-	light_value.pwm_duty[0] = 255-value->red;
-	light_value.pwm_duty[1] = 255-value->green;
-	light_value.pwm_duty[2] = 255-value->blue;
+	light_value.pwm_freq=25000;
+	light_value.pwm_duty[0] = 255-(value->blue);
+	light_value.pwm_duty[1] = 255-(value->red);
+	light_value.pwm_duty[2] = 255-(value->green);
 	peri_rgb_light_param_set(light_value);
+
+ //   PRINTF("pwm_freq: %d, pwm_duty_blue: %d, pwm_duty_red: %d, pwm_duty_green: %d\n", light_value.pwm_freq,
+ //       (light_value.pwm_duty)[0], (light_value.pwm_duty)[1], (light_value.pwm_duty)[2]);
 }
 
 void ICACHE_FLASH_ATTR

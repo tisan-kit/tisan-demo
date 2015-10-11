@@ -27,6 +27,7 @@ air_get(struct air* value) {
 	// TODO: implement object get  function here
 	// get function retrieve hardware status and assign it to value.
 	value->quality=peri_iaq_read();
+	//PRINTF("Air Quality: %d\n",value->quality);
 
 }
 /*

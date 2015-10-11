@@ -29,6 +29,8 @@ extern UartDevice    UartDev;
 LOCAL struct UartBuffer* pTxBuffer = NULL;
 LOCAL struct UartBuffer* pRxBuffer = NULL;
 
+uint8 RcvBuff[128];
+
 /*uart demo with a system task, to output what uart receives*/
 /*this is a example to process uart data from task,please change the priority to fit your application task if exists*/
 /*it might conflict with your task, if so,please arrange the priority of different task,  or combine it to a different event in the same task. */
@@ -217,6 +219,7 @@ uart0_rx_intr_handler(void *para)
     * uart1 and uart0 respectively
     */
     uint8 RcvChar;
+
     uint8 uart_no = UART0;//UartDev.buff_uart_no;
     uint8 fifo_len = 0;
     uint8 buf_idx = 0;
@@ -228,23 +231,28 @@ uart0_rx_intr_handler(void *para)
 	/*ALL THE FUNCTIONS CALLED IN INTERRUPT HANDLER MUST BE DECLARED IN RAM */
 	/*IF NOT , POST AN EVENT AND PROCESS IN SYSTEM TASK */
     if(UART_FRM_ERR_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_FRM_ERR_INT_ST)){
-    	PRINTF("UART_FRM_ERR_INT_ST\n");
         DBG1("FRM_ERR\r\n");
         WRITE_PERI_REG(UART_INT_CLR(uart_no), UART_FRM_ERR_INT_CLR);
     }else if(UART_RXFIFO_FULL_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_FULL_INT_ST)){
-    	PRINTF("UART_RXFIFO_FULL_INT_ST\n");
     	DBG("f");
         uart_rx_intr_disable(UART0);
         WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_FULL_INT_CLR);
         system_os_post(uart_recvTaskPrio, 0, 0);
     }else if(UART_RXFIFO_TOUT_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_TOUT_INT_ST)){
-    	PRINTF("UART_RXFIFO_TOUT_INT_ST\n");
     	DBG("t");
         uart_rx_intr_disable(UART0);
         WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_TOUT_INT_CLR);
-        system_os_post(uart_recvTaskPrio, 0, 0);
+        fifo_len = (READ_PERI_REG(UART_STATUS(UART0))>>UART_RXFIFO_CNT_S)&UART_RXFIFO_CNT;//read rf fifo length
+        buf_idx = 0;
+       PRINTF("RX length:%d\n\r",fifo_len);// for dbg
+        while(buf_idx<fifo_len)
+        {
+        	RcvBuff[buf_idx] = READ_PERI_REG(UART_FIFO(UART0))&0xFF;
+        	buf_idx++;
+        }
+        peri_pm_25_get();
+        // system_os_post(uart_recvTaskPrio, 0, 0);
     }else if(UART_TXFIFO_EMPTY_INT_ST == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_TXFIFO_EMPTY_INT_ST)){
-    	PRINTF("UART_TXFIFO_EMPTY_INT_ST\n");
     	DBG("e");
 	/* to output uart data from uart buffer directly in empty interrupt handler*/
 	/*instead of processing in system event, in order not to wait for current task/function to quit */
@@ -259,7 +267,6 @@ uart0_rx_intr_handler(void *para)
         WRITE_PERI_REG(UART_INT_CLR(uart_no), UART_TXFIFO_EMPTY_INT_CLR);
         
     }else if(UART_RXFIFO_OVF_INT_ST  == (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_OVF_INT_ST)){
-    	PRINTF("UART_RXFIFO_OVF_INT_ST\n");
     	WRITE_PERI_REG(UART_INT_CLR(uart_no), UART_RXFIFO_OVF_INT_CLR);
         DBG1("RX OVF!!\r\n");
     }

@@ -359,8 +359,6 @@ pwm_init(struct PWM_APP_PARAM light_param,struct PWM_INIT light_init)
     	io_name[j] = tisan_get_gpio_name(gpio_id[j]);
 
     }
-    PRINTF("IO1_ID: %d, IO2_ID: %d, IO3_ID: %d", gpio_id[0], gpio_id[1], gpio_id[2]);
-    PRINTF("IO1_NAME: %x, IO2_NAME: %x, IO3_NAME: %x", io_name[0], io_name[1], io_name[2]);
 
     for (i = 0; i < gpio_num; i++) {
         pwm_gpio |= (1 << gpio_id[i]);
