@@ -27,7 +27,8 @@
  * 0x84 is the i2c slave device address for 7 bit. */
 
 PM25_REV_DATA *PM25_data_buffer;
-
+extern uint8 RcvBuff[128];
+uint16 pm25_data;
 void display_PMdevice_data(PM25_REV_DATA *data_buffer)
 {
 	PRINTF("PM device data display\n");
@@ -54,13 +55,18 @@ void display_PMdevice_data(PM25_REV_DATA *data_buffer)
 uint16 ICACHE_FLASH_ATTR
 peri_pm_25_get(void)
 {
-	ETS_UART_INTR_ENABLE();
-	 PRINTF("start\n");
-/*	 if (UART_RXFIFO_FULL_INT_ST != (READ_PERI_REG(UART_INT_ST(0)) & UART_RXFIFO_FULL_INT_ST))
-	    {
-	        while(1);
-	    }*/
-	  PRINTF("pm2.5:%x\n", PM25_data_buffer->pm2_5);
-	return (PM25_data_buffer->pm2_5);
+	uint8 i,data1,data2;
+	 if(RcvBuff[0]==0x32)
+	 {
+		 data1 = RcvBuff[6];
+		 data2 = RcvBuff[7];
+		 pm25_data = data1*256+ data2;
+		 PRINTF("data1=%x , data2=%x\n", data1,data2);
+		// PM25_data_buffer->pm2_5 = (RcvBuff[6]<<8)&0xff00 + RcvBuff[7] ;
+	 }
+
+	// PRINTF("pm2.5:%x\n", PM25_data_buffer->pm2_5);
+	 PRINTF("pm2.5 : %x\n", pm25_data);
+	 return pm25_data;
 }
 
