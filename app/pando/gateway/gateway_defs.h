@@ -12,7 +12,7 @@
 #ifndef __GATEWAY_DEFS_H__
 #define __GATEWAY_DEFS_H__
 
-#define PANDO_API_URL "http://api.pandocloud.com"
+#define PANDO_API_URL "https://api.pandocloud.com"
 
 #define DATANAME_DEVICE_ID "pando_device_id"
 #define DATANAME_DEVICE_SECRET "pando_device_secret"
