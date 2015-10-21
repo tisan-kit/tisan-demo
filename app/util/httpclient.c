@@ -407,13 +407,22 @@ void ICACHE_FLASH_ATTR http_post(const char * url, const char * post_data, http_
 	// FIXME: get rid of the #anchor part if present.
 
 	char hostname[128] = "";
-	int port = 443;
+	int port = 80;
+	bool secure = false;
 
-	if (os_strncmp(url, "http://", os_strlen("http://")) != 0) {
-		PRINTF("URL is not HTTP %s\n", url);
-		return;
-	}
-	url += os_strlen("http://"); // Get rid of the protocol.
+	bool is_http  = os_strncmp(url, "http://",  strlen("http://"))  == 0;
+	bool is_https = os_strncmp(url, "https://", strlen("https://")) == 0;
+
+	if (is_http)
+		url += strlen("http://"); // Get rid of the protocol.
+	else if (is_https) {
+		port = 443;
+		secure = true;
+		url += strlen("https://"); // Get rid of the protocol.
+	} else {
+			os_printf("URL is not HTTP or HTTPS %s\n", url);
+			return;
+	 }
 
 	char * path = os_strchr(url, '/');
 	if (path == NULL) {
@@ -432,12 +441,12 @@ void ICACHE_FLASH_ATTR http_post(const char * url, const char * post_data, http_
 	else {
 		port = atoi(colon + 1);
 		if (port == 0) {
-			PRINTF("Port error %s\n", url);
+			os_printf("Port error %s\n", url);
 			return;
-		}
+	}
 
-		os_memcpy(hostname, url, colon - url);
-		hostname[colon - url] = '\0';
+	os_memcpy(hostname, url, colon - url);
+	hostname[colon - url] = '\0';
 	}
 
 
@@ -450,6 +459,7 @@ void ICACHE_FLASH_ATTR http_post(const char * url, const char * post_data, http_
 	PRINTF("path=%s\n", path);
 	http_raw_request(hostname, port, path, post_data, user_callback);
 }
+
 
 void ICACHE_FLASH_ATTR http_get(const char * url, http_callback user_callback)
 {
