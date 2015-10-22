@@ -53,7 +53,7 @@ wifi_connect_check()
 		// device has connected the wifi.
 
 		// the device is in wifi config mode, waiting for wifi config mode over.
-		if(get_wifi_conifg_state() == 1)
+		if(get_wifi_config_state() == 1)
 		{
 			return;
 		}
