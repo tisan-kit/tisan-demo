@@ -129,13 +129,6 @@ pando_device_register(register_callback callback)
         device_register_callback = callback;
     }
 
-    char * str_device_id = NULL;
-    char * str_device_secret = NULL;
-    char * str_device_key = NULL;
-    str_device_id = pando_data_get(DATANAME_DEVICE_ID);
-    str_device_secret = pando_data_get(DATANAME_DEVICE_SECRET);
-    str_device_key = pando_data_get(DATANAME_DEVICE_KEY);
-
     char str_device_serial[DEVICE_SERIAL_BUF_LEN];
     char device_sta_mac[6];
     wifi_get_macaddr(STATION_IF,device_sta_mac);

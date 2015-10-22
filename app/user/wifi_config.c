@@ -19,14 +19,14 @@ static bool s_config_start_flag = 0;
 
 
 /******************************************************************************
- * FunctionName : get_wifi_conifg_state
+ * FunctionName : get_wifi_config_state
  * Description  : get the wifi config state.
  * Parameters   : none.
- * Returns      : 1: the device is in wifi cofig state.
+ * Returns      : 1: the device is in wifi config state.
  * 				  0: the device is not in wifi config state.
 *******************************************************************************/
 bool ICACHE_FLASH_ATTR
-get_wifi_conifg_state()
+get_wifi_config_state()
 {
 	return s_config_start_flag;
 }

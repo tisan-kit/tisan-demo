@@ -92,7 +92,7 @@ http_callback_login(char * response, int http_status, char * full_response)
         PRINTF("device login failed: %s\n", message);
         if(device_login_callback != NULL) 
         {
-            device_login_callback(ERR_NOT_REGISTERED);
+            device_login_callback(ERR_LOGIN_FAIL);
         }
         return;
     }
