@@ -17,8 +17,11 @@
 #include "spi_flash.h"
 #include "gpio.h"
 #include "peri_rgb_light.h"
+#include "../pando/pando_object.h"
 
-#define JDQ_FLASH_PRIV_SAVE     2
+extern uint8_t FLASH_SEC_NUM ;
+
+#define JDQ_FLASH_PRIV_SAVE     FLASH_SEC_NUM
 uint8 jdq_pin;
 /******************************************************************************
  * FunctionName : peri_jdq_get.
@@ -28,7 +31,7 @@ uint8 jdq_pin;
 *******************************************************************************/
 
 uint8 ICACHE_FLASH_ATTR
-peri_jdq_get(void)
+peri_jdq_get()
 {
     uint8  jdq_state;
     

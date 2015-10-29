@@ -15,6 +15,11 @@
 #include "driver/pwm.h"
 #include "c_types.h"
 #include "spi_flash.h"
+#include "../pando/pando_object.h"
+
+extern uint8_t FLASH_SEC_NUM ;
+
+#define RGB_LIGHT_PRIV_SAVE FLASH_SEC_NUM
 
 struct PWM_APP_PARAM light_r_param={25000,255,0,255};
 struct PWM_APP_PARAM light_g_param={25000,0,255,255};
@@ -32,7 +37,7 @@ peri_rgb_light_param_get(void)
 {
     struct PWM_APP_PARAM ret;
     
-    spi_flash_read((PRIV_PARAM_START_SEC + PRIV_PARAM_SAVE) * SPI_FLASH_SEC_SIZE,
+    spi_flash_read((PRIV_PARAM_START_SEC + RGB_LIGHT_PRIV_SAVE) * SPI_FLASH_SEC_SIZE,
     	(uint32 *)&ret, sizeof(struct PWM_APP_PARAM));
     return ret;
 }
@@ -55,8 +60,8 @@ peri_rgb_light_param_set( struct PWM_APP_PARAM light_param)
     
     pwm_start();
     
-    spi_flash_erase_sector(PRIV_PARAM_START_SEC + PRIV_PARAM_SAVE);
-	spi_flash_write((PRIV_PARAM_START_SEC + PRIV_PARAM_SAVE) * SPI_FLASH_SEC_SIZE,
+    spi_flash_erase_sector(PRIV_PARAM_START_SEC + RGB_LIGHT_PRIV_SAVE);
+	spi_flash_write((PRIV_PARAM_START_SEC + RGB_LIGHT_PRIV_SAVE) * SPI_FLASH_SEC_SIZE,
 	    (uint32 *)&light_param, sizeof(struct PWM_APP_PARAM));
 }
 
@@ -108,7 +113,7 @@ peri_rgb_light_init(struct PWM_APP_PARAM light_param,struct PWM_INIT light_init)
     PRINTF("pwm_freq: %d, pwm_duty_red: %d, pwm_duty_green: %d, pwm_duty_blue: %d\n", light_param.pwm_freq,
         (light_param.pwm_duty)[0], (light_param.pwm_duty)[1], (light_param.pwm_duty)[2]);
 
-    spi_flash_write((PRIV_PARAM_START_SEC + PRIV_PARAM_SAVE) * SPI_FLASH_SEC_SIZE,
+    spi_flash_write((PRIV_PARAM_START_SEC + RGB_LIGHT_PRIV_SAVE) * SPI_FLASH_SEC_SIZE,
     	    (uint32 *)&light_param, sizeof(struct PWM_APP_PARAM));
             
     pwm_init(light_param,light_init);

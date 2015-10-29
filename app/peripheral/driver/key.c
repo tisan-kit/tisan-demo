@@ -14,11 +14,9 @@
 #include "mem.h"
 #include "gpio.h"
 #include "user_interface.h"
-#include "../peri_key.h"
-
 #include "key.h"
 
-#define LONG_PRESS_COUNT 3000
+
 /******************************************************************************
  * FunctionName : key_init
  * Description  : init keys
@@ -28,19 +26,19 @@
 void ICACHE_FLASH_ATTR
 key_init(uint32 gpio_name,uint8 gpio_id,uint8 gpio_func)
 {
-        PIN_FUNC_SELECT(gpio_name,gpio_func);
-        PIN_PULLUP_EN(gpio_name);
-        gpio_output_set(0, 0, 0, GPIO_ID_PIN(gpio_id));
+	PIN_FUNC_SELECT(gpio_name,gpio_func);
+	PIN_PULLUP_EN(gpio_name);
+	gpio_output_set(0, 0, 0, GPIO_ID_PIN(gpio_id));
 
-        gpio_register_set(GPIO_PIN_ADDR(gpio_id), GPIO_PIN_INT_TYPE_SET(GPIO_PIN_INTR_DISABLE)
-                          | GPIO_PIN_PAD_DRIVER_SET(GPIO_PAD_DRIVER_DISABLE)
-                          | GPIO_PIN_SOURCE_SET(GPIO_AS_PIN_SOURCE));
+	gpio_register_set(GPIO_PIN_ADDR(gpio_id), GPIO_PIN_INT_TYPE_SET(GPIO_PIN_INTR_DISABLE)
+					  | GPIO_PIN_PAD_DRIVER_SET(GPIO_PAD_DRIVER_DISABLE)
+					  | GPIO_PIN_SOURCE_SET(GPIO_AS_PIN_SOURCE));
 
-        //clear interrupt status
-        GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(gpio_id));
+	//clear interrupt status
+	GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, BIT(gpio_id));
 
-        //enable interrupt
-        gpio_pin_intr_state_set(GPIO_ID_PIN(gpio_id), GPIO_PIN_INTR_NEGEDGE);
+	//enable interrupt
+	gpio_pin_intr_state_set(GPIO_ID_PIN(gpio_id), GPIO_PIN_INTR_NEGEDGE);
 }
 /******************************************************************************
  * FunctionName : key_5s_cb
@@ -48,7 +46,7 @@ key_init(uint32 gpio_name,uint8 gpio_id,uint8 gpio_func)
  * Parameters   : single_key_param *single_key - single key parameter
  * Returns      : none
 *******************************************************************************/
-LOCAL void ICACHE_FLASH_ATTR
+void ICACHE_FLASH_ATTR
 key_5s_cb(struct key_param *single_key)
 {
     os_timer_disarm(&single_key->key_5s);
@@ -66,7 +64,7 @@ key_5s_cb(struct key_param *single_key)
  * Parameters   : single_key_param *single_key - single key parameter
  * Returns      : none
 *******************************************************************************/
-LOCAL void ICACHE_FLASH_ATTR
+void ICACHE_FLASH_ATTR
 key_50ms_cb(struct key_param *single_key)
 {
     os_timer_disarm(&single_key->key_50ms);
@@ -85,42 +83,5 @@ key_50ms_cb(struct key_param *single_key)
     }
 }
 
-/******************************************************************************
- * FunctionName : key_intr_handler
- * Description  : key interrupt handler
- * Parameters   : key_param *keys - keys parameter, which inited by key_init_single
- * Returns      : none
-*******************************************************************************/
-void key_intr_handler(struct key_param *key)
-{
-    uint8 i;
-    uint32 gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 
-        if (gpio_status & BIT(key->gpio_id))
-        {
-            //disable interrupt
-            gpio_pin_intr_state_set(GPIO_ID_PIN(key->gpio_id), GPIO_PIN_INTR_DISABLE);
-
-            //clear interrupt status
-            GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(key->gpio_id));
-
-            if (key->key_level == 1)
-            {
-                // 5s, restart & enter softap mode
-                os_timer_disarm(&key->key_5s);
-                os_timer_setfn(&key->key_5s, (os_timer_func_t *)key_5s_cb, key);
-                os_timer_arm(&key->key_5s, LONG_PRESS_COUNT, 0);
-                key->key_level = 0;
-                gpio_pin_intr_state_set(GPIO_ID_PIN(key->gpio_id), GPIO_PIN_INTR_POSEDGE);
-            }
-            else
-            {
-                // 50ms, check if this is a real key up
-                os_timer_disarm(&key->key_50ms);
-                os_timer_setfn(&key->key_50ms, (os_timer_func_t *)key_50ms_cb, key);
-                os_timer_arm(&key->key_50ms, 50, 0);
-            }
-        }
-
-}
 

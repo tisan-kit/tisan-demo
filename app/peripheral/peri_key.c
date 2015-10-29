@@ -15,11 +15,9 @@
 #include "driver/key.h"
 #include "os_type.h"
 #include "mem.h"
-
+#include "driver/tisan_gpio_intr.h"
  
-LOCAL struct key_param key;
 
-extern void key_intr_handler(struct key_param *key);
 /******************************************************************************
  * FunctionName : user_plug_short_press
  * Description  : key's short press function, needed to be installed
@@ -62,7 +60,7 @@ peri_single_key_init(uint8 gpio_id,key_function long_press, key_function short_p
     single_key->long_press = long_press;
     single_key->short_press = short_press;
 
-    ETS_GPIO_INTR_ATTACH(key_intr_handler,single_key);
+    ETS_GPIO_INTR_ATTACH(gpio_intr_handler, single_key);
     ETS_GPIO_INTR_DISABLE();
 
     key_init(gpio_name, gpio_id, gpio_func);

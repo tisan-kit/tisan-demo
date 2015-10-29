@@ -15,6 +15,7 @@
 
 static pando_object s_pando_object_list[MAX_OBJECTS] = {};
 static int s_pando_object_list_idx = 0;
+uint8_t FLASH_SEC_NUM = 0;
 
 void ICACHE_FLASH_ATTR
 register_pando_object(pando_object object)
@@ -23,7 +24,7 @@ register_pando_object(pando_object object)
 	{
 		return;
 	}
-
+	FLASH_SEC_NUM = object.no;
 	s_pando_object_list[s_pando_object_list_idx++] = object;
 }
 

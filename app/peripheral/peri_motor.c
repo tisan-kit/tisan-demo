@@ -16,10 +16,12 @@
 #include "driver/pwm.h"
 #include "c_types.h"
 #include "spi_flash.h"
+#include "../pando/pando_object.h"
+
+extern uint8_t FLASH_SEC_NUM ;
 
 
-
-#define MOTOR_FLASH_PRIV_SAVE     1
+#define MOTOR_FLASH_PRIV_SAVE     FLASH_SEC_NUM
 
 struct PWM_APP_PARAM motor_forward_param={25000,40,0};
 struct PWM_APP_PARAM motor_backard_param={25000,0,40};
