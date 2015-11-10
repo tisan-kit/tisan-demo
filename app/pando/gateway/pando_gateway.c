@@ -51,18 +51,20 @@ wifi_connect_check()
 	if (connect_status == STATION_GOT_IP && device_ip.ip.addr != 0)
 	{
 		// device has connected the wifi.
+		PRINTF("connect the ap!\n");
 
 		// the device is in wifi config mode, waiting for wifi config mode over.
 		if(get_wifi_config_state() == 1)
 		{
 			return;
 		}
+
 		os_timer_disarm(&wifi_check_timer);
 		pando_device_login(login_cb);
 	}
 	else
 	{
-		PRINTF("WIFI status: not connected\n");
+		PRINTF("WIFI status: not connected.");
 	}
 }
 

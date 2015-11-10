@@ -18,7 +18,6 @@
 #include "../peripheral/peri_key.h"
 #include "wifi_config.h"
 #include "../pando/pando_framework.h"
-#include "objects/temperature.h"
 
 static void ICACHE_FLASH_ATTR
 user_key_long_press_cb()

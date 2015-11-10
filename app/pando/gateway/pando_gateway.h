@@ -12,6 +12,9 @@
 #ifndef __PANDO_GATEWAY_H__
 #define __PANDO_GATEWAY_H__
 
+//if need wifi config without key mode, open it
+//#define WIFI_CONFIG_WITHOUT_KEY
+
 /******************************************************************************
  * FunctionName : pando_gateway_init
  * Description  : initialize the gateway.
