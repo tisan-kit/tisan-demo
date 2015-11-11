@@ -40,4 +40,6 @@ bool get_wifi_config_state();
 *******************************************************************************/
 void wifi_config(wifi_config_callback config_cb);
 
+void auto_check_connect_init(void);
+
 #endif

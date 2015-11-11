@@ -13,8 +13,6 @@
 #include "user_interface.h"
 #include "../../peripheral/peri_rgb_light.h"
 
-#define LED_OBJECT_NO 1
-
 struct led {
 	uint8 red;
 	uint8 green;
@@ -136,7 +134,7 @@ led_object_init()
 
 	// register the object
 	pando_object led_object = {
-		LED_OBJECT_NO,
+		1,
 		led_object_pack,
 		led_object_unpack,
 	};
