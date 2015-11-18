@@ -15,40 +15,70 @@
 #include "tisan_gpio_intr.h"
 
 
-void gpio_intr_handler(void *arg)
+void gpio_intr_handler(struct base_key_param **keys_param)
 {
     uint8 i;
     uint32 gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
+	uint8 gpio_id;
+
+	struct base_key_param * single_key = NULL;
 
     PRINTF("Get into gpio_intr_handler, gpio_status:%u\n", gpio_status);
 
-	if (gpio_status & BIT(((struct key_param *)arg)->gpio_id))
+	for(i = 0; i < KEY_MAX_NUM; i++)
 	{
-		struct key_param *key = (struct key_param *)arg;
+		single_key = keys_param[i];
 
-		//disable interrupt
-		gpio_pin_intr_state_set(GPIO_ID_PIN(key->gpio_id), GPIO_PIN_INTR_DISABLE);
-		//clear interrupt status
-		GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(key->gpio_id));
-
-		if (key->key_level == 1)
+		if(single_key == NULL)
 		{
-			// 5s, restart & enter softap mode
-			os_timer_disarm(&key->key_5s);
-			os_timer_setfn(&key->key_5s, (os_timer_func_t *)key_5s_cb, key);
-			os_timer_arm(&key->key_5s, LONG_PRESS_COUNT, 0);
-			key->key_level = 0;
-			gpio_pin_intr_state_set(GPIO_ID_PIN(key->gpio_id), GPIO_PIN_INTR_POSEDGE);
+			PRINTF("\r\nintr sinle_key is NULL, i:%d\r\n",i);
+			continue;
 		}
-		else
+
+		gpio_id = single_key->gpio_id;
+		PRINTF("\r\ngpio_id:%d, BIT(gpio_id):%d\r\n",gpio_id, BIT(gpio_id));
+		if(gpio_status & BIT(gpio_id))
 		{
-			// 50ms, check if this is a real key up
-			os_timer_disarm(&key->key_50ms);
-			os_timer_setfn(&key->key_50ms, (os_timer_func_t *)key_50ms_cb, key);
-			os_timer_arm(&key->key_50ms, 50, 0);
+			PRINTF("\r\n key config start....\r\n");
+			//disable interrupt
+			gpio_pin_intr_state_set(GPIO_ID_PIN(gpio_id), GPIO_PIN_INTR_DISABLE);
+			//clear interrupt status
+			GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(gpio_id));
+
+			//if need to manage special gpio event,  manage here
+			//example: manage key config wifi connect, need call config_key_init() first
+			if(i == 0)
+			{
+				if(single_key->level == 1)
+				{// 5s, restart & enter softap mode
+					PRINTF("\r\n sinle_key->level:%d....\r\n", single_key->level);
+					os_timer_disarm(&single_key->k_timer1);
+					os_timer_setfn(&single_key->k_timer1, (os_timer_func_t *)key_5s_cb,
+							single_key);
+					os_timer_arm(&single_key->k_timer1, LONG_PRESS_COUNT, 0);
+					single_key->level = 0;
+					gpio_pin_intr_state_set(GPIO_ID_PIN(gpio_id), GPIO_PIN_INTR_POSEDGE);
+				}
+				else
+				{
+					// 50ms, check if this is a real key up
+					PRINTF("\r\n50ms sinle_key->level:%d....\r\n", single_key->level);
+					os_timer_disarm(&single_key->k_timer2);
+					os_timer_setfn(&single_key->k_timer2, (os_timer_func_t *)key_50ms_cb,
+							single_key);
+					os_timer_arm(&single_key->k_timer2, 50, 0);
+				}
+
+				continue;
+			}
+
+			//other manage
+
 		}
 	}
 
+
 }
+
 
 
