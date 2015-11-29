@@ -9,6 +9,7 @@
  *     Author:
  *     Modification:
  *********************************************************/
+
 #include "peri_key.h"
 #include "user_interface.h"
 #include "eagle_soc.h"
@@ -16,6 +17,7 @@
 #include "os_type.h"
 #include "mem.h"
 #include "driver/tisan_gpio_intr.h"
+#include "../user/wifi_config.h"
  
 
 /******************************************************************************
@@ -30,41 +32,32 @@ peri_key_short_press(void)
 	  PRINTF("short\n");
 }
 
-
 /******************************************************************************
  * FunctionName : user_plug_long_press
  * Description  : key's long press function, needed to be installed, preserved function.
  * Parameters   : none
  * Returns      : none
 *******************************************************************************/
-
 void ICACHE_FLASH_ATTR
 peri_key_long_press(void)
 {
-	  PRINTF("long\n");
+	  PRINTF("long press..\n");
+	  wifi_config(NULL);
 }
-/******************************************************************************
- * FunctionName : peri_key_init.
- * Description  : initialize key device.
- * Parameters   : none
- * Returns      : none
-*******************************************************************************/
+
 void ICACHE_FLASH_ATTR
-peri_single_key_init(uint8 gpio_id,key_function long_press, key_function short_press)
+peri_config_key_init(uint8 gpio_id)
 {
-    struct key_param *single_key = (struct key_param *)os_zalloc(sizeof(struct key_param));
-    uint32 gpio_name=tisan_get_gpio_name(gpio_id);
-    uint8 gpio_func=tisan_get_gpio_general_func(gpio_id);
-    single_key->gpio_id = gpio_id;
-    single_key->key_level = 1;
-    single_key->long_press = long_press;
-    single_key->short_press = short_press;
+	struct base_key_param *key = (struct base_key_param *)os_zalloc(sizeof(struct base_key_param));
 
-    ETS_GPIO_INTR_ATTACH(gpio_intr_handler, single_key);
-    ETS_GPIO_INTR_DISABLE();
+	key->gpio_id = gpio_id;
+	key->gpio_name = tisan_get_gpio_name(gpio_id);
+	key->gpio_func = tisan_get_gpio_general_func(gpio_id);
+	key->level = 1;
+	key->k_function1 = peri_key_long_press;
+	key->k_function2 = peri_key_short_press;
 
-    key_init(gpio_name, gpio_id, gpio_func);
-
-    ETS_GPIO_INTR_ENABLE();
-
+	PRINTF("\r\nkey->gpio_id:%d\r\n", key->gpio_id);
+	key_single_init(key);
 }
+

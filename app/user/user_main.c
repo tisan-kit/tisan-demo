@@ -19,11 +19,6 @@
 #include "wifi_config.h"
 #include "../pando/pando_framework.h"
 
-static void ICACHE_FLASH_ATTR
-user_key_long_press_cb()
-{
-	wifi_config(NULL);
-}
 
 /******************************************************************************
  * FunctionName : user_init
@@ -36,7 +31,10 @@ void user_init(void)
 	uart_init(115200, 115200); // serial bound rate:11520.
 
 	//long press gpio4, enter into wifi config mode.
-	peri_single_key_init(4, user_key_long_press_cb, NULL);
+	peri_config_key_init(4);
+	base_keys_init();               //base keys init at the last of every single key init.
+
+	//auto_check_connect_init();
 
 	// add you object init here.
 	led_object_init();
