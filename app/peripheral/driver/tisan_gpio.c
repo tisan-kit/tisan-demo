@@ -412,10 +412,10 @@ uint32 tisan_get_gpio_name(uint8 io_id)
 uint8 tisan_get_gpio_general_func(uint8 io_id)
 {
 	uint8 io_func;
-	if(io_id>10)
-		io_func=3;
-	else if(io_id>0)
+	if((io_id==0)||(io_id==2)||(io_id==4)||(io_id==5))
 		io_func=0;
+	else
+		io_func=3;
 
 	return io_func;
 }
